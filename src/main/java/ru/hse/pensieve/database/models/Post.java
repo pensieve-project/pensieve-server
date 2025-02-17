@@ -12,10 +12,14 @@ public class Post {
     private UUID id;
 
     private String text;
+    private UUID authorId;
+    private UUID threadId;
 
-    public Post(UUID id, String text) {
+    public Post(UUID id, String text, UUID authorId, UUID threadId) {
         this.id = id;
         this.text = text;
+        this.authorId = authorId;
+        this.threadId = threadId;
     }
 
     public UUID getId() {
@@ -32,5 +36,21 @@ public class Post {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public UUID getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(UUID authorId) {
+        this.authorId = authorId;
+    }
+
+    public UUID getThreadId() {
+        return threadId;
+    }
+
+    public void setThreadId(UUID threadId) {
+        this.threadId = threadId;
     }
 }
