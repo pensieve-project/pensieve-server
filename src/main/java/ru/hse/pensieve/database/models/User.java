@@ -1,14 +1,16 @@
-package ru.hse.pensieve;
+package ru.hse.pensieve.database.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "users", schema = "public")
 @Data
 @NoArgsConstructor
+@Getter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,16 +24,13 @@ public class User {
     @JsonIgnore
     private String passwordHash;
 
-    public User(String username, String passwordHash) {
+    @Column(name = "salt")
+    @JsonIgnore
+    private String salt;
+
+    public User(String username, String passwordHash, String salt) {
         this.username = username;
         this.passwordHash = passwordHash;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
+        this.salt = salt;
     }
 }
