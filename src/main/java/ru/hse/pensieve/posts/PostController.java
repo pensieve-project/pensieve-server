@@ -2,7 +2,7 @@ package ru.hse.pensieve.posts;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.hse.pensieve.database.models.Post;
+import ru.hse.pensieve.database.cassandra.models.Post;
 
 import java.util.List;
 import java.util.UUID;
