@@ -27,6 +27,8 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-starter-security"
 
+    implementation 'org.springframework.boot:spring-boot-starter-data-cassandra'
+
     compileOnly 'javax.servlet:javax.servlet-api:3.0.1'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
