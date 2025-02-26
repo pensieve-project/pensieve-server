@@ -1,4 +1,4 @@
-package ru.hse.pensieve.authentication;
+package ru.hse.pensieve.authorization;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import ru.hse.pensieve.authentication.model.AuthenticationRequest;
-import ru.hse.pensieve.authentication.model.AuthenticationResponse;
-import ru.hse.pensieve.authentication.model.RegisterRequest;
-import ru.hse.pensieve.authentication.service.AuthenticationService;
+import ru.hse.pensieve.authorization.model.AuthorizationRequest;
+import ru.hse.pensieve.authorization.model.AuthenticationResponse;
+import ru.hse.pensieve.authorization.model.RegisterRequest;
+import ru.hse.pensieve.authorization.service.AuthenticationService;
 
 @RestController
 @RequestMapping("/auth")
@@ -28,7 +28,7 @@ public class AuthenticationController {
 
     @ResponseBody
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> loginUser(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<AuthenticationResponse> loginUser(@RequestBody AuthorizationRequest request) {
         return ResponseEntity.ok(authenticationService.login(request).join());
     }
 }

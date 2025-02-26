@@ -1,4 +1,4 @@
-package ru.hse.pensieve.authentication.model;
+package ru.hse.pensieve.authorization.model;
 
 import lombok.AllArgsConstructor;
 

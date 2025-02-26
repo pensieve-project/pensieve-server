@@ -1,4 +1,4 @@
-package ru.hse.pensieve.authentication.service;
+package ru.hse.pensieve.authorization.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -8,11 +8,11 @@ import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
 
-import ru.hse.pensieve.authentication.model.AuthenticationRequest;
-import ru.hse.pensieve.authentication.model.AuthenticationResponse;
-import ru.hse.pensieve.authentication.model.RegisterRequest;
-import ru.hse.pensieve.database.models.User;
-import ru.hse.pensieve.database.repositories.UserRepository;
+import ru.hse.pensieve.authorization.model.AuthorizationRequest;
+import ru.hse.pensieve.authorization.model.AuthenticationResponse;
+import ru.hse.pensieve.authorization.model.RegisterRequest;
+import ru.hse.pensieve.database.postgres.models.User;
+import ru.hse.pensieve.database.postgres.repositories.UserRepository;
 
 @Service
 public class AuthenticationService {
@@ -20,13 +20,13 @@ public class AuthenticationService {
     @Autowired
     private UserRepository userRepository;
 
-    public CompletableFuture<AuthenticationResponse> login(AuthenticationRequest request) {
+    public CompletableFuture<AuthenticationResponse> login(AuthorizationRequest request) {
         return CompletableFuture.supplyAsync(() -> {
-            String salt = userRepository.findSaltByUsername(request.getUsername())
-                    .orElseThrow(() -> new RuntimeException("Salt not found for user: " + request.getUsername()));
-            User user = userRepository.findUserByUsernameAndPasswordHash(
-                    request.getUsername(), request.getPassword() + salt)
-                    .orElseThrow(() -> new RuntimeException("User not found or incorrect password"));
+            String salt = userRepository.findSaltByEmail(request.getEmail())
+                    .orElseThrow(() -> new RuntimeException("Email not found"));
+            User user = userRepository.findUserByEmailAndPasswordHash(
+                    request.getEmail(), request.getPassword() + salt)
+                    .orElseThrow(() -> new RuntimeException("Wrong password"));
             return new AuthenticationResponse(
                     user.getId(),
                     user.getUsername()
@@ -40,12 +40,16 @@ public class AuthenticationService {
             if (userExists) {
                 throw new InsufficientAuthenticationException("Username " + request.getUsername() + " already exists");
             }
+            userExists = userRepository.existsUserByEmail(request.getEmail());
+            if (userExists) {
+                throw new InsufficientAuthenticationException("Email " + request.getEmail() + " already exists");
+            }
             SecureRandom random = new SecureRandom();
             byte[] generatedSalt = new byte[16];
             random.nextBytes(generatedSalt);
             String salt =  Base64.getEncoder().encodeToString(generatedSalt);
-            String PasswordHash = request.getPassword() + salt;
-            User user = new User(request.getUsername(), PasswordHash, salt);
+            String passwordHash = request.getPassword() + salt;
+            User user = new User(request.getUsername(), request.getEmail(), passwordHash, salt);
             User userWithId = userRepository.save(user);
             return new AuthenticationResponse(
                     userWithId.getId(),

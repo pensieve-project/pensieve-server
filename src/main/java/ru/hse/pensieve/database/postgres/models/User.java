@@ -1,4 +1,4 @@
-package ru.hse.pensieve.database.models;
+package ru.hse.pensieve.database.postgres.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -20,6 +20,9 @@ public class User {
     @Column(name = "username")
     private String username;
 
+    @Column(name = "email")
+    private String email;
+
     @Column(name = "passwordHash")
     @JsonIgnore
     private String passwordHash;
@@ -28,8 +31,9 @@ public class User {
     @JsonIgnore
     private String salt;
 
-    public User(String username, String passwordHash, String salt) {
+    public User(String username, String email, String passwordHash, String salt) {
         this.username = username;
+        this.email = email;
         this.passwordHash = passwordHash;
         this.salt = salt;
     }
