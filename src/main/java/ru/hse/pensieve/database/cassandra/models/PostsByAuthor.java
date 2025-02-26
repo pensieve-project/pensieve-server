@@ -6,23 +6,17 @@ import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.Getter;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @AllArgsConstructor
 @Getter
 @Setter
-@Table("posts")
-public class Post {
+@Table("postsByAuthor")
+public class PostsByAuthor {
 
     @PrimaryKey
-    private PostKey key;
+    private PostsByAuthorKey key;
 
     private UUID postId;
     private String text;
-    private Instant timeStamp;
-    // image
-    // geo
-    private int likesCount;
-
 }

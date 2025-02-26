@@ -11,7 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table("posts")
+@Table("profiles")
 public class Profile {
 
     @PrimaryKey
@@ -19,5 +19,5 @@ public class Profile {
 
     // avatar
     private String description;
-    // countLikes
+    // arrayLikedThreadIds
 }
