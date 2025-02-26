@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS profiles (
     PRIMARY KEY ((authorId))
 );
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS postsByAuthor AS
-SELECT threadId, authorId, postId, text
+CREATE MATERIALIZED VIEW IF NOT EXISTS posts_by_author AS
+SELECT threadId, authorId, postId, text, timeStamp, likesCount
 FROM posts
 WHERE authorId IS NOT NULL AND threadId IS NOT NULL
 PRIMARY KEY (authorId, threadId);

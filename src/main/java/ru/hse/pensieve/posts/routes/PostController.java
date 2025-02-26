@@ -1,8 +1,10 @@
-package ru.hse.pensieve.posts;
+package ru.hse.pensieve.posts.routes;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.pensieve.database.cassandra.models.Post;
+import ru.hse.pensieve.posts.models.PostRequest;
+import ru.hse.pensieve.posts.service.PostService;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,12 +22,7 @@ public class PostController {
 
     @PostMapping
     public Post createPost(@RequestBody PostRequest request) {
-        return postService.savePost(request.getText(), request.getAuthorId(), request.getThreadId());
-    }
-
-    @GetMapping
-    public Post getPost(@RequestParam UUID id) {
-        return postService.getPostById(id);
+        return postService.savePost(request);
     }
 
     @GetMapping("/by-author")

@@ -1,8 +1,8 @@
 package ru.hse.pensieve.authorization.config;
 
 import ru.hse.pensieve.authorization.service.JwtService;
-import ru.hse.pensieve.authorization.model.JwtAuthentication;
-import ru.hse.pensieve.authorization.model.Role;
+import ru.hse.pensieve.authorization.models.JwtAuthentication;
+import ru.hse.pensieve.authorization.models.Role;
 import lombok.RequiredArgsConstructor;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.context.SecurityContextHolder;

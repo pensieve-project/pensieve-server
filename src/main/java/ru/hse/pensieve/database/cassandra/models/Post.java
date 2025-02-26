@@ -25,4 +25,11 @@ public class Post {
     // geo
     private int likesCount;
 
+    public Post(PostByAuthor postByAuthor) {
+        this.key = new PostKey(postByAuthor.getKey().getThreadId(), postByAuthor.getKey().getAuthorId());
+        this.postId = postByAuthor.getPostId();
+        this.text = postByAuthor.getText();
+        this.timeStamp = postByAuthor.getTimeStamp();
+        this.likesCount = postByAuthor.getLikesCount();
+    }
 }

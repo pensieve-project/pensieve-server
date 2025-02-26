@@ -1,6 +1,6 @@
 package ru.hse.pensieve.authorization.service;
 
-import ru.hse.pensieve.authorization.model.User;
+import ru.hse.pensieve.authorization.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

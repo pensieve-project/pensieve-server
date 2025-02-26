@@ -14,7 +14,7 @@ import lombok.Getter;
 @Getter
 @Setter
 @PrimaryKeyClass
-public class PostsByAuthorKey implements Serializable {
+public class PostByAuthorKey implements Serializable {
 
     @PrimaryKeyColumn(type = PrimaryKeyType.PARTITIONED)
     private final UUID authorId;

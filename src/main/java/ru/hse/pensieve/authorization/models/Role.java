@@ -1,4 +1,4 @@
-package ru.hse.pensieve.authorization.model;
+package ru.hse.pensieve.authorization.models;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

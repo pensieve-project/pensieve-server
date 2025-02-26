@@ -16,9 +16,9 @@ import lombok.Getter;
 @PrimaryKeyClass
 public class PostKey implements Serializable {
 
-    @PrimaryKeyColumn(name = "threadId", type = PrimaryKeyType.PARTITIONED)
+    @PrimaryKeyColumn(type = PrimaryKeyType.PARTITIONED)
     private final UUID threadId;
 
-    @PrimaryKeyColumn(name = "authorId", type = PrimaryKeyType.CLUSTERED)
+    @PrimaryKeyColumn(type = PrimaryKeyType.CLUSTERED)
     private final UUID authorId;
 }
