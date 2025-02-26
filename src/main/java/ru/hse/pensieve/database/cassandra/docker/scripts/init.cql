@@ -2,11 +2,32 @@ CREATE KEYSPACE IF NOT EXISTS pensieve WITH REPLICATION = {'class' : 'SimpleStra
 
 USE pensieve;
 
-CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY,
-    username TEXT,
-    email TEXT
+CREATE TABLE IF NOT EXISTS posts (
+    threadId UUID,
+    authorId UUID,
+    postId UUID,
+    text TEXT,
+    timeStamp TIMESTAMP,
+    likesCount INT,
+    PRIMARY KEY ((threadId), authorId)
 );
 
-INSERT INTO users (id, username, email) VALUES (uuid(), 'Alice', 'alice@gmail.com');
-INSERT INTO users (id, username, email) VALUES (uuid(), 'Bob', 'bob@gmail.com');
+CREATE TABLE IF NOT EXISTS threads (
+    threadId UUID,
+    authorId UUID,
+    title TEXT,
+    timeStamp TIMESTAMP,
+    PRIMARY KEY ((threadId), authorId)
+);
+
+CREATE TABLE IF NOT EXISTS profiles (
+    authorId UUID,
+    description TEXT,
+    PRIMARY KEY ((authorId))
+);
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS postsByAuthor AS
+SELECT threadId, authorId, postId, text
+FROM posts
+WHERE authorId IS NOT NULL AND threadId IS NOT NULL
+PRIMARY KEY (authorId, threadId);
