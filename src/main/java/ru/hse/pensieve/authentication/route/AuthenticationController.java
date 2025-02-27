@@ -1,16 +1,10 @@
-package ru.hse.pensieve.authentication;
+package ru.hse.pensieve.authentication.route;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import ru.hse.pensieve.authentication.model.AuthenticationRequest;
-import ru.hse.pensieve.authentication.model.AuthenticationResponse;
-import ru.hse.pensieve.authentication.model.RegisterRequest;
+import ru.hse.pensieve.authentication.model.*;
 import ru.hse.pensieve.authentication.service.AuthenticationService;
 
 @RestController
@@ -30,5 +24,11 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> loginUser(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authenticationService.login(request).join());
+    }
+
+    @ResponseBody
+    @GetMapping("/token")
+    public ResponseEntity<Tokens> getNewTokens(@RequestBody RefreshRequest request) {
+        return ResponseEntity.ok(authenticationService.getNewTokens(request));
     }
 }

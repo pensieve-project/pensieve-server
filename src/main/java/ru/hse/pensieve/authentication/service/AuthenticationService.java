@@ -1,5 +1,6 @@
 package ru.hse.pensieve.authentication.service;
 
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -7,9 +8,7 @@ import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
 
-import ru.hse.pensieve.authentication.model.AuthenticationRequest;
-import ru.hse.pensieve.authentication.model.AuthenticationResponse;
-import ru.hse.pensieve.authentication.model.RegisterRequest;
+import ru.hse.pensieve.authentication.model.*;
 import ru.hse.pensieve.database.postgres.models.User;
 import ru.hse.pensieve.database.postgres.repositories.UserRepository;
 
@@ -19,6 +18,9 @@ public class AuthenticationService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private JwtService jwtService;
+
     public CompletableFuture<AuthenticationResponse> login(AuthenticationRequest request) {
         return CompletableFuture.supplyAsync(() -> {
             String salt = userRepository.findSaltByEmail(request.getEmail())
@@ -26,9 +28,14 @@ public class AuthenticationService {
             User user = userRepository.findUserByEmailAndPasswordHash(
                     request.getEmail(), request.getPassword() + salt)
                     .orElseThrow(() -> new RuntimeException("Wrong password"));
+            final String accessToken = jwtService.generateAccessToken(user);
+            final String refreshToken = jwtService.generateRefreshToken(user);
+            userRepository.updateRefreshToken(user.getId(), refreshToken);
             return new AuthenticationResponse(
                     user.getId(),
-                    user.getUsername()
+                    user.getUsername(),
+                    accessToken,
+                    refreshToken
             );
         });
     }
@@ -49,11 +56,26 @@ public class AuthenticationService {
             String salt =  Base64.getEncoder().encodeToString(generatedSalt);
             String passwordHash = request.getPassword() + salt;
             User user = new User(request.getUsername(), request.getEmail(), passwordHash, salt);
+            final String accessToken = jwtService.generateAccessToken(user);
+            final String refreshToken = jwtService.generateRefreshToken(user);
+            user.setRefreshToken(refreshToken);
             User userWithId = userRepository.save(user);
             return new AuthenticationResponse(
                     userWithId.getId(),
-                    userWithId.getUsername()
+                    userWithId.getUsername(),
+                    accessToken,
+                    refreshToken
             );
         });
+    }
+
+    public Tokens getNewTokens(RefreshRequest request) {
+        String refreshToken = request.getRefreshToken();
+        if (userRepository.existsByRefreshToken(refreshToken) && jwtService.validateRefreshToken(refreshToken)) {
+            Tokens newTokens = jwtService.generateTokens(refreshToken);
+            userRepository.updateRefreshToken(request.getUserId(), newTokens.getRefreshToken());
+            return newTokens;
+        }
+        throw new RuntimeException("You need to login again");
     }
 }

@@ -1,4 +1,4 @@
-package ru.hse.pensieve.authorization.config;
+package ru.hse.pensieve.authentication.config;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,21 +22,21 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        return http
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/login", "/token").permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-//                .build();
         return http
                 .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        .requestMatchers("/auth/login", "/auth/register", "/auth/token").permitAll()
+                        .anyRequest().authenticated()
                 )
+                .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
+//        return http
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests(auth -> auth
+//                        .anyRequest().permitAll()
+//                )
+//                .build();
     }
 
 }

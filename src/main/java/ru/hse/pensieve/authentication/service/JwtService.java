@@ -1,6 +1,7 @@
-package ru.hse.pensieve.authorization.service;
+package ru.hse.pensieve.authentication.service;
 
-import ru.hse.pensieve.authorization.models.User;
+import ru.hse.pensieve.authentication.model.Tokens;
+import ru.hse.pensieve.database.postgres.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -34,19 +35,34 @@ public class JwtService {
 
     public String generateAccessToken(@NonNull User user) {
         return Jwts.builder()
-            .setSubject(user.getLogin())
+            .setSubject(user.getUsername())
             .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 5))
             .signWith(jwtAccessSecret)
-            .claim("roles", user.getRoles())
             .compact();
     }
 
     public String generateRefreshToken(@NonNull User user) {
         return Jwts.builder()
-            .setSubject(user.getLogin())
+            .setSubject(user.getUsername())
             .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30))
             .signWith(jwtRefreshSecret)
             .compact();
+    }
+
+    public Tokens generateTokens(@NonNull String refreshToken) {
+        Claims claims = getRefreshClaims(refreshToken);
+        String username = claims.getSubject();
+        String newAccessToken = Jwts.builder()
+                .setSubject(username)
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 5))
+                .signWith(jwtAccessSecret)
+                .compact();
+        String newRefreshToken = Jwts.builder()
+                .setSubject(username)
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30))
+                .signWith(jwtRefreshSecret)
+                .compact();
+        return new Tokens(newAccessToken, newRefreshToken);
     }
 
     public boolean validateAccessToken(@NonNull String accessToken) {

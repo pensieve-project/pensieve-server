@@ -1,8 +1,7 @@
-package ru.hse.pensieve.authorization.config;
+package ru.hse.pensieve.authentication.config;
 
-import ru.hse.pensieve.authorization.service.JwtService;
-import ru.hse.pensieve.authorization.models.JwtAuthentication;
-import ru.hse.pensieve.authorization.models.Role;
+import ru.hse.pensieve.authentication.service.JwtService;
+import ru.hse.pensieve.authentication.model.JwtAuthentication;
 import lombok.RequiredArgsConstructor;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,8 +14,6 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -31,7 +28,7 @@ public class JwtFilter extends GenericFilterBean {
         final String token = getTokenFromRequest((HttpServletRequest) request);
         if (token != null && jwtService.validateAccessToken(token)) {
             final Claims claims = jwtService.getAccessClaims(token);
-            SecurityContextHolder.getContext().setAuthentication(getInfoToken(claims));
+            SecurityContextHolder.getContext().setAuthentication(new JwtAuthentication(claims.getSubject(), true));
         }
         fc.doFilter(request, response);
     }
@@ -42,14 +39,5 @@ public class JwtFilter extends GenericFilterBean {
             return bearer.substring(7);
         }
         return null;
-    }
-
-    private JwtAuthentication getInfoToken(Claims claims) {
-        final JwtAuthentication jwtInfoToken = new JwtAuthentication();
-        final List<String> roles = claims.get("roles", List.class);
-        jwtInfoToken.setRoles(roles.stream().map(Role::valueOf).collect(Collectors.toSet()));
-        jwtInfoToken.setUsername(claims.getSubject());
-        jwtInfoToken.setAuthenticated(true);
-        return jwtInfoToken;
     }
 }

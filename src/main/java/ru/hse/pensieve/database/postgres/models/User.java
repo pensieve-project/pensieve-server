@@ -6,11 +6,14 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Entity
 @Table(name = "users", schema = "public")
 @Data
 @NoArgsConstructor
 @Getter
+@Setter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +33,9 @@ public class User {
     @Column(name = "salt")
     @JsonIgnore
     private String salt;
+
+    @Column(name = "refreshToken")
+    private String refreshToken;
 
     public User(String username, String email, String passwordHash, String salt) {
         this.username = username;

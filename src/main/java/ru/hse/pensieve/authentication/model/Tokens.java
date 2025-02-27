@@ -2,14 +2,12 @@ package ru.hse.pensieve.authentication.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@NoArgsConstructor
+@Setter
 @AllArgsConstructor
-public class AuthenticationResponse {
-    private int id;
-    private String username;
+public class Tokens {
     private String accessToken;
     private String refreshToken;
 }

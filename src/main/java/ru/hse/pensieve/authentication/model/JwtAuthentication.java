@@ -1,5 +1,6 @@
-package ru.hse.pensieve.authorization.models;
+package ru.hse.pensieve.authentication.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,18 +8,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.Collections;
 
+@AllArgsConstructor
 @Setter
 @Getter
 public class JwtAuthentication implements Authentication {
 
-    private boolean authenticated;
     private String username;
-    private Set<Role> roles;
+    private boolean authenticated;
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() { return roles; }
+    public Collection<? extends GrantedAuthority> getAuthorities() { return Collections.emptySet(); }
 
     @Override
     public Object getCredentials() { return null; }
