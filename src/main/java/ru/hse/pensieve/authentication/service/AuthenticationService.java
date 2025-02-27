@@ -1,16 +1,15 @@
-package ru.hse.pensieve.authorization.service;
+package ru.hse.pensieve.authentication.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
 
-import ru.hse.pensieve.authorization.model.AuthorizationRequest;
-import ru.hse.pensieve.authorization.model.AuthenticationResponse;
-import ru.hse.pensieve.authorization.model.RegisterRequest;
+import ru.hse.pensieve.authentication.model.AuthenticationRequest;
+import ru.hse.pensieve.authentication.model.AuthenticationResponse;
+import ru.hse.pensieve.authentication.model.RegisterRequest;
 import ru.hse.pensieve.database.postgres.models.User;
 import ru.hse.pensieve.database.postgres.repositories.UserRepository;
 
@@ -20,7 +19,7 @@ public class AuthenticationService {
     @Autowired
     private UserRepository userRepository;
 
-    public CompletableFuture<AuthenticationResponse> login(AuthorizationRequest request) {
+    public CompletableFuture<AuthenticationResponse> login(AuthenticationRequest request) {
         return CompletableFuture.supplyAsync(() -> {
             String salt = userRepository.findSaltByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("Email not found"));
@@ -38,11 +37,11 @@ public class AuthenticationService {
         return CompletableFuture.supplyAsync(() -> {
             boolean userExists = userRepository.existsUserByUsername(request.getUsername());
             if (userExists) {
-                throw new InsufficientAuthenticationException("Username " + request.getUsername() + " already exists");
+                throw new RuntimeException("Username " + request.getUsername() + " already exists");
             }
             userExists = userRepository.existsUserByEmail(request.getEmail());
             if (userExists) {
-                throw new InsufficientAuthenticationException("Email " + request.getEmail() + " already exists");
+                throw new RuntimeException("Email " + request.getEmail() + " already exists");
             }
             SecureRandom random = new SecureRandom();
             byte[] generatedSalt = new byte[16];

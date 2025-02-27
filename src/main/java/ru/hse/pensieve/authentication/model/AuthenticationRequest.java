@@ -1,4 +1,4 @@
-package ru.hse.pensieve.authorization.model;
+package ru.hse.pensieve.authentication.model;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,9 +9,7 @@ import lombok.Getter;
 @Builder
 @Getter
 @AllArgsConstructor
-public class RegisterRequest {
-    @NotBlank
-    private String username;
+public class AuthenticationRequest {
     @NotBlank
     @Email
     private String email;

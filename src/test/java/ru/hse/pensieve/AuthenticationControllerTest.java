@@ -13,11 +13,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import ru.hse.pensieve.authorization.AuthenticationController;
-import ru.hse.pensieve.authorization.model.AuthorizationRequest;
-import ru.hse.pensieve.authorization.model.AuthenticationResponse;
-import ru.hse.pensieve.authorization.model.RegisterRequest;
-import ru.hse.pensieve.authorization.service.AuthenticationService;
+import ru.hse.pensieve.authentication.AuthenticationController;
+import ru.hse.pensieve.authentication.model.AuthenticationRequest;
+import ru.hse.pensieve.authentication.model.AuthenticationResponse;
+import ru.hse.pensieve.authentication.model.RegisterRequest;
+import ru.hse.pensieve.authentication.service.AuthenticationService;
 
 public class AuthenticationControllerTest {
     @Mock
@@ -46,9 +46,9 @@ public class AuthenticationControllerTest {
 
     @Test
     public void testLoginUser_Success() {
-        AuthorizationRequest request = new AuthorizationRequest("user", "password");
+        AuthenticationRequest request = new AuthenticationRequest("user", "password");
         AuthenticationResponse response = new AuthenticationResponse(1, "user");
-        when(authenticationService.login(any(AuthorizationRequest.class))).thenReturn(CompletableFuture.completedFuture(response));
+        when(authenticationService.login(any(AuthenticationRequest.class))).thenReturn(CompletableFuture.completedFuture(response));
 
         ResponseEntity<AuthenticationResponse> result = authenticationController.loginUser(request);
 
