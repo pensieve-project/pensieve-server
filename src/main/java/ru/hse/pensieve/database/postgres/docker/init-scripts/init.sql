@@ -8,11 +8,10 @@ END $$;
 \c pensieveDatabase;
 
 CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    username VARCHAR(255) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    passwordHash VARCHAR(255) NOT NULL,
+    salt VARCHAR(255) NOT NULL,
+    refreshToken VARCHAR(255)
 );
-
-INSERT INTO users (username, email) VALUES
-('Alice', 'alice@gmail.com'),
-('Bob', 'bob@gmail.com');

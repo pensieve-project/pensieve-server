@@ -1,6 +1,7 @@
 package ru.hse.pensieve.database.postgres.repositories;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,5 +20,5 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     @Modifying
     @Transactional
     @Query("UPDATE User u SET u.refreshToken = :refreshToken WHERE u.id = :userId")
-    void updateRefreshToken(@Param("userId") Integer userId, @Param("refreshToken") String refreshToken);
+    void updateRefreshToken(@Param("userId") UUID userId, @Param("refreshToken") String refreshToken);
 }
