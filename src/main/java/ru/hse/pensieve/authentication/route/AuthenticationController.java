@@ -26,7 +26,7 @@ public class AuthenticationController {
     }
 
     @GetMapping("/token")
-    public ResponseEntity<Tokens> getNewTokens(@CookieValue(value = "refresh_token", required = false) String refreshToken, HttpServletResponse response) {
+    public ResponseEntity<String> getNewTokens(@CookieValue(value = "refresh_token", required = false) String refreshToken, HttpServletResponse response) {
         if (refreshToken == null) {
             return ResponseEntity.status(400).body(null);
         }

@@ -1,5 +1,7 @@
 package ru.hse.pensieve.authentication.model;
 
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,8 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthenticationResponse {
-    private int id;
+    private UUID id;
     private String username;
-    private String accessToken;
-    private String refreshToken;
 }

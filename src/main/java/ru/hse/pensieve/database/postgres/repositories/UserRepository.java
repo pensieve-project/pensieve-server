@@ -1,6 +1,7 @@
 package ru.hse.pensieve.database.postgres.repositories;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import ru.hse.pensieve.database.postgres.models.User;
 
-public interface UserRepository extends CrudRepository<User, Integer> {
+public interface UserRepository extends CrudRepository<User, UUID> {
     boolean existsUserByUsername(String username);
     boolean existsUserByEmail(String email);
     boolean existsByRefreshToken(String refreshToken);
@@ -23,5 +24,5 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     @Modifying
     @Transactional
     @Query("UPDATE User u SET u.refreshToken = :refreshToken WHERE u.id = :userId")
-    void updateRefreshTokenById(@Param("userId") Integer userId, @Param("refreshToken") String refreshToken);
+    void updateRefreshTokenById(@Param("userId") UUID userId, @Param("refreshToken") String refreshToken);
 }

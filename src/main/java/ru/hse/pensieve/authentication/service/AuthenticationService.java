@@ -37,9 +37,7 @@ public class AuthenticationService {
             response.addCookie(getRefreshTokenCookie(refreshToken));
             return new AuthenticationResponse(
                     user.getId(),
-                    user.getUsername(),
-                    accessToken,
-                    refreshToken
+                    user.getUsername()
             );
         });
     }
@@ -67,19 +65,17 @@ public class AuthenticationService {
             response.addCookie(getRefreshTokenCookie(refreshToken));
             return new AuthenticationResponse(
                     userWithId.getId(),
-                    userWithId.getUsername(),
-                    accessToken,
-                    refreshToken
+                    userWithId.getUsername()
             );
         });
     }
 
-    public Tokens getNewTokens(String refreshToken, HttpServletResponse response) {
+    public String getNewTokens(String refreshToken, HttpServletResponse response) {
         if (userRepository.existsByRefreshToken(refreshToken) && jwtService.validateRefreshToken(refreshToken)) {
             Tokens newTokens = jwtService.generateTokens(refreshToken);
             userRepository.updateRefreshToken(refreshToken, newTokens.getRefreshToken());
             response.addCookie(getRefreshTokenCookie(newTokens.getRefreshToken()));
-            return newTokens;
+            return newTokens.getAccessToken();
         }
         throw new RuntimeException("You need to login again");
     }
