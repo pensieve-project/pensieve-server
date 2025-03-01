@@ -12,6 +12,9 @@ import ru.hse.pensieve.authentication.model.*;
 import ru.hse.pensieve.database.postgres.models.User;
 import ru.hse.pensieve.database.postgres.repositories.UserRepository;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+
 @Service
 public class AuthenticationService {
 
@@ -21,7 +24,7 @@ public class AuthenticationService {
     @Autowired
     private JwtService jwtService;
 
-    public CompletableFuture<AuthenticationResponse> login(AuthenticationRequest request) {
+    public CompletableFuture<AuthenticationResponse> login(AuthenticationRequest request, HttpServletResponse response) {
         return CompletableFuture.supplyAsync(() -> {
             String salt = userRepository.findSaltByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("Email not found"));
@@ -30,7 +33,8 @@ public class AuthenticationService {
                     .orElseThrow(() -> new RuntimeException("Wrong password"));
             final String accessToken = jwtService.generateAccessToken(user);
             final String refreshToken = jwtService.generateRefreshToken(user);
-            userRepository.updateRefreshToken(user.getId(), refreshToken);
+            userRepository.updateRefreshTokenById(user.getId(), refreshToken);
+            response.addCookie(getRefreshTokenCookie(refreshToken));
             return new AuthenticationResponse(
                     user.getId(),
                     user.getUsername(),
@@ -40,7 +44,7 @@ public class AuthenticationService {
         });
     }
 
-    public CompletableFuture<AuthenticationResponse> register(RegisterRequest request) {
+    public CompletableFuture<AuthenticationResponse> register(RegisterRequest request, HttpServletResponse response) {
         return CompletableFuture.supplyAsync(() -> {
             boolean userExists = userRepository.existsUserByUsername(request.getUsername());
             if (userExists) {
@@ -60,6 +64,7 @@ public class AuthenticationService {
             final String refreshToken = jwtService.generateRefreshToken(user);
             user.setRefreshToken(refreshToken);
             User userWithId = userRepository.save(user);
+            response.addCookie(getRefreshTokenCookie(refreshToken));
             return new AuthenticationResponse(
                     userWithId.getId(),
                     userWithId.getUsername(),
@@ -69,13 +74,21 @@ public class AuthenticationService {
         });
     }
 
-    public Tokens getNewTokens(RefreshRequest request) {
-        String refreshToken = request.getRefreshToken();
+    public Tokens getNewTokens(String refreshToken, HttpServletResponse response) {
         if (userRepository.existsByRefreshToken(refreshToken) && jwtService.validateRefreshToken(refreshToken)) {
             Tokens newTokens = jwtService.generateTokens(refreshToken);
-            userRepository.updateRefreshToken(request.getUserId(), newTokens.getRefreshToken());
+            userRepository.updateRefreshToken(refreshToken, newTokens.getRefreshToken());
+            response.addCookie(getRefreshTokenCookie(newTokens.getRefreshToken()));
             return newTokens;
         }
         throw new RuntimeException("You need to login again");
+    }
+
+    private Cookie getRefreshTokenCookie(String refreshToken) {
+        Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(60 * 60 * 24 * 30);
+        return refreshTokenCookie;
     }
 }

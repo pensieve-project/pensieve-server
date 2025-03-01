@@ -3,6 +3,7 @@ package ru.hse.pensieve.authentication.route;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletResponse;
 
 import ru.hse.pensieve.authentication.model.*;
 import ru.hse.pensieve.authentication.service.AuthenticationService;
@@ -14,21 +15,21 @@ public class AuthenticationController {
     @Autowired
     private AuthenticationService authenticationService;
 
-    @ResponseBody
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> registerUser(@RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(authenticationService.register(request).join());
+    public ResponseEntity<AuthenticationResponse> registerUser(@RequestBody RegisterRequest request, HttpServletResponse response) {
+        return ResponseEntity.ok(authenticationService.register(request, response).join());
     }
 
-    @ResponseBody
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> loginUser(@RequestBody AuthenticationRequest request) {
-        return ResponseEntity.ok(authenticationService.login(request).join());
+    public ResponseEntity<AuthenticationResponse> loginUser(@RequestBody AuthenticationRequest request, HttpServletResponse response) {
+        return ResponseEntity.ok(authenticationService.login(request, response).join());
     }
 
-    @ResponseBody
     @GetMapping("/token")
-    public ResponseEntity<Tokens> getNewTokens(@RequestBody RefreshRequest request) {
-        return ResponseEntity.ok(authenticationService.getNewTokens(request));
+    public ResponseEntity<Tokens> getNewTokens(@CookieValue(value = "refresh_token", required = false) String refreshToken, HttpServletResponse response) {
+        if (refreshToken == null) {
+            return ResponseEntity.status(400).body(null);
+        }
+        return ResponseEntity.ok(authenticationService.getNewTokens(refreshToken, response));
     }
 }

@@ -18,6 +18,10 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     Optional<User> findUserByEmailAndPasswordHash(String email, String passwordHash);
     @Modifying
     @Transactional
+    @Query("UPDATE User u SET u.refreshToken = :refreshToken WHERE u.refreshToken = :oldRefreshToken")
+    void updateRefreshToken(@Param("oldRefreshToken") String oldRefreshToken, @Param("refreshToken") String refreshToken);
+    @Modifying
+    @Transactional
     @Query("UPDATE User u SET u.refreshToken = :refreshToken WHERE u.id = :userId")
-    void updateRefreshToken(@Param("userId") Integer userId, @Param("refreshToken") String refreshToken);
+    void updateRefreshTokenById(@Param("userId") Integer userId, @Param("refreshToken") String refreshToken);
 }
