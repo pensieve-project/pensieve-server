@@ -25,8 +25,8 @@ public class PostService {
     }
 
     public Post savePost(PostRequest request) {
-        PostKey postKey = new PostKey(request.getThreadId(), request.getAuthorId());
-        Post post = new Post(postKey, UUID.randomUUID(), request.getText(), Instant.now(), 0);
+        PostKey postKey = new PostKey(request.getThreadId(), request.getAuthorId(), UUID.randomUUID());
+        Post post = new Post(postKey, request.getText(), Instant.now(), 0);
         return postRepository.save(post);
     }
 

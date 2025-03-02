@@ -21,4 +21,7 @@ public class PostKey implements Serializable {
 
     @PrimaryKeyColumn(type = PrimaryKeyType.CLUSTERED)
     private final UUID authorId;
+
+    @PrimaryKeyColumn(type = PrimaryKeyType.CLUSTERED)
+    private final UUID postId;
 }

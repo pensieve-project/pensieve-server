@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class AuthenticationResponse {
     private UUID id;
     private String username;
+    private String accessToken;
+    private String refreshToken;
 }

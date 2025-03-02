@@ -18,7 +18,6 @@ public class PostByAuthor {
     @PrimaryKey
     private PostByAuthorKey key;
 
-    private UUID postId;
     private String text;
     private Instant timeStamp;
     // image
