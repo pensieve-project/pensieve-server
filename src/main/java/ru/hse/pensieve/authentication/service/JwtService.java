@@ -1,6 +1,6 @@
 package ru.hse.pensieve.authentication.service;
 
-import ru.hse.pensieve.authentication.model.Tokens;
+import ru.hse.pensieve.authentication.models.Tokens;
 import ru.hse.pensieve.database.postgres.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

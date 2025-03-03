@@ -1,23 +1,7 @@
 package ru.hse.pensieve;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
-
-import java.util.concurrent.CompletableFuture;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import ru.hse.pensieve.authentication.route.AuthenticationController;
-import ru.hse.pensieve.authentication.model.AuthenticationRequest;
-import ru.hse.pensieve.authentication.model.AuthenticationResponse;
-import ru.hse.pensieve.authentication.model.RegisterRequest;
-import ru.hse.pensieve.authentication.service.AuthenticationService;
 
 public class AuthenticationControllerTest {
 //    @Mock

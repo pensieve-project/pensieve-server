@@ -1,4 +1,4 @@
-package ru.hse.pensieve.authentication.model;
+package ru.hse.pensieve.authentication.models;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

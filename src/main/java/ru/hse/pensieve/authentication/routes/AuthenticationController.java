@@ -1,10 +1,10 @@
-package ru.hse.pensieve.authentication.route;
+package ru.hse.pensieve.authentication.routes;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import ru.hse.pensieve.authentication.model.*;
+import ru.hse.pensieve.authentication.models.*;
 import ru.hse.pensieve.authentication.service.AuthenticationService;
 
 @RestController

@@ -1,6 +1,5 @@
 package ru.hse.pensieve.authentication.service;
 
-import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,7 +7,7 @@ import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
 
-import ru.hse.pensieve.authentication.model.*;
+import ru.hse.pensieve.authentication.models.*;
 import ru.hse.pensieve.database.postgres.models.User;
 import ru.hse.pensieve.database.postgres.repositories.UserRepository;
 
