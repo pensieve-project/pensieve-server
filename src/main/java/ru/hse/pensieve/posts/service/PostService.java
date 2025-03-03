@@ -25,7 +25,7 @@ public class PostService {
     }
 
     public Post savePost(PostRequest request) {
-        PostKey postKey = new PostKey(request.getThreadId(), request.getAuthorId(), UUID.randomUUID());
+        PostKey postKey = new PostKey(request.getThemeId(), request.getAuthorId(), UUID.randomUUID());
         Post post = new Post(postKey, request.getText(), Instant.now(), 0);
         return postRepository.save(post);
     }
@@ -34,7 +34,7 @@ public class PostService {
         return postByAuthorRepository.findByKeyAuthorId(authorId).stream().map(Post::new).toList();
     }
 
-    public List<Post> getPostsByThread(UUID threadId) {
-        return postRepository.findByKeyThreadId(threadId);
+    public List<Post> getPostsByTheme(UUID themeId) {
+        return postRepository.findByKeyThemeId(themeId);
     }
 }

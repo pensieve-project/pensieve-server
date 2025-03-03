@@ -30,8 +30,8 @@ public class PostController {
         return postService.getPostsByAuthor(authorId);
     }
 
-    @GetMapping("/by-thread")
-    public List<Post> getPostsByThread(@RequestParam UUID threadId) {
-        return postService.getPostsByThread(threadId);
+    @GetMapping("/by-theme")
+    public List<Post> getPostsByTheme(@RequestParam UUID themeId) {
+        return postService.getPostsByTheme(themeId);
     }
 }

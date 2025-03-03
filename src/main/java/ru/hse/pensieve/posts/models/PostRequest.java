@@ -9,5 +9,5 @@ import lombok.*;
 public class PostRequest {
     private String text;
     private UUID authorId;
-    private UUID threadId;
+    private UUID themeId;
 }

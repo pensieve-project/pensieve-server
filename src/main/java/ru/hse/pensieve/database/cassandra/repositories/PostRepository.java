@@ -8,5 +8,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PostRepository extends CassandraRepository<Post, PostKey> {
-    List<Post> findByKeyThreadId(UUID threadId);
+    List<Post> findByKeyThemeId(UUID themeId);
 }

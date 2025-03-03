@@ -14,10 +14,10 @@ import lombok.Getter;
 @Getter
 @Setter
 @PrimaryKeyClass
-public class ThreadKey implements Serializable {
+public class ThemeKey implements Serializable {
 
     @PrimaryKeyColumn(type = PrimaryKeyType.PARTITIONED)
-    private final UUID threadId;
+    private final UUID themeId;
 
     @PrimaryKeyColumn(type = PrimaryKeyType.CLUSTERED)
     private final UUID authorId;

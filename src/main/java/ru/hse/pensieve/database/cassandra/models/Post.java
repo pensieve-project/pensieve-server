@@ -25,7 +25,7 @@ public class Post {
     private int likesCount;
 
     public Post(PostByAuthor postByAuthor) {
-        this.key = new PostKey(postByAuthor.getKey().getThreadId(), postByAuthor.getKey().getAuthorId(), postByAuthor.getKey().getPostId());
+        this.key = new PostKey(postByAuthor.getKey().getThemeId(), postByAuthor.getKey().getAuthorId(), postByAuthor.getKey().getPostId());
         this.text = postByAuthor.getText();
         this.timeStamp = postByAuthor.getTimeStamp();
         this.likesCount = postByAuthor.getLikesCount();

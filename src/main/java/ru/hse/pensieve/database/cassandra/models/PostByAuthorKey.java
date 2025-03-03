@@ -20,7 +20,7 @@ public class PostByAuthorKey implements Serializable {
     private final UUID authorId;
 
     @PrimaryKeyColumn(type = PrimaryKeyType.CLUSTERED)
-    private final UUID threadId;
+    private final UUID themeId;
 
     @PrimaryKeyColumn(type = PrimaryKeyType.CLUSTERED)
     private final UUID postId;

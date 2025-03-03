@@ -11,11 +11,11 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table("threads")
-public class Thread {
+@Table("themes")
+public class Theme {
 
     @PrimaryKey
-    private ThreadKey key;
+    private ThemeKey key;
 
     private String title;
     private Instant timeStamp;
