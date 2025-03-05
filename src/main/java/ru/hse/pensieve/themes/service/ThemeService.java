@@ -6,6 +6,7 @@ import ru.hse.pensieve.database.cassandra.models.Theme;
 import ru.hse.pensieve.database.cassandra.models.ThemeKey;
 import ru.hse.pensieve.database.cassandra.repositories.ThemeRepository;
 import ru.hse.pensieve.themes.models.ThemeRequest;
+import ru.hse.pensieve.themes.models.ThemeResponse;
 
 import java.time.Instant;
 import java.util.List;
@@ -21,14 +22,14 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public Theme createTheme(ThemeRequest request) {
+    public ThemeResponse createTheme(ThemeRequest request) {
         ThemeKey key = new ThemeKey(UUID.randomUUID(), request.getAuthorId());
         Theme theme = new Theme(key, request.getTitle(), Instant.now());
-        return themeRepository.save(theme);
+        return new ThemeResponse(themeRepository.save(theme));
     }
 
-    public List<Theme> getAllThemes() {
-        return themeRepository.findAll();
+    public List<ThemeResponse> getAllThemes() {
+        return themeRepository.findAll().stream().map(ThemeResponse::new).toList();
     }
 
 }

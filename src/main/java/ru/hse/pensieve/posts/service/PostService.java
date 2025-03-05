@@ -7,6 +7,7 @@ import ru.hse.pensieve.database.cassandra.models.PostKey;
 import ru.hse.pensieve.database.cassandra.repositories.PostRepository;
 import ru.hse.pensieve.database.cassandra.repositories.PostByAuthorRepository;
 import ru.hse.pensieve.posts.models.PostRequest;
+import ru.hse.pensieve.posts.models.PostResponse;
 
 import java.time.Instant;
 import java.util.List;
@@ -24,17 +25,17 @@ public class PostService {
         this.postByAuthorRepository = postsByAuthorRepository;
     }
 
-    public Post savePost(PostRequest request) {
+    public PostResponse savePost(PostRequest request) {
         PostKey postKey = new PostKey(request.getThemeId(), request.getAuthorId(), UUID.randomUUID());
         Post post = new Post(postKey, request.getText(), Instant.now(), 0);
-        return postRepository.save(post);
+        return new PostResponse(postRepository.save(post));
     }
 
-    public List<Post> getPostsByAuthor(UUID authorId) {
-        return postByAuthorRepository.findByKeyAuthorId(authorId).stream().map(Post::new).toList();
+    public List<PostResponse> getPostsByAuthor(UUID authorId) {
+        return postByAuthorRepository.findByKeyAuthorId(authorId).stream().map(PostResponse::new).toList();
     }
 
-    public List<Post> getPostsByTheme(UUID themeId) {
-        return postRepository.findByKeyThemeId(themeId);
+    public List<PostResponse> getPostsByTheme(UUID themeId) {
+        return postRepository.findByKeyThemeId(themeId).stream().map(PostResponse::new).toList();
     }
 }

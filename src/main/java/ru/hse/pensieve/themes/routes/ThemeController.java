@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.pensieve.database.cassandra.models.Theme;
 import ru.hse.pensieve.themes.models.ThemeRequest;
+import ru.hse.pensieve.themes.models.ThemeResponse;
 import ru.hse.pensieve.themes.service.ThemeService;
 
 import java.util.List;
@@ -21,12 +22,12 @@ public class ThemeController {
     }
 
     @PostMapping
-    public Theme createTheme(@RequestBody ThemeRequest request) {
+    public ThemeResponse createTheme(@RequestBody ThemeRequest request) {
         return themeService.createTheme(request);
     }
 
     @GetMapping
-    public List<Theme> getAllThemes() {
+    public List<ThemeResponse> getAllThemes() {
         return themeService.getAllThemes();
     }
 }

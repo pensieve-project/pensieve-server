@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.pensieve.database.cassandra.models.Post;
 import ru.hse.pensieve.posts.models.PostRequest;
+import ru.hse.pensieve.posts.models.PostResponse;
 import ru.hse.pensieve.posts.service.PostService;
 
 import java.util.List;
@@ -21,17 +22,17 @@ public class PostController {
     }
 
     @PostMapping
-    public Post createPost(@RequestBody PostRequest request) {
+    public PostResponse createPost(@RequestBody PostRequest request) {
         return postService.savePost(request);
     }
 
     @GetMapping("/by-author")
-    public List<Post> getPostsByAuthor(@RequestParam UUID authorId) {
+    public List<PostResponse> getPostsByAuthor(@RequestParam UUID authorId) {
         return postService.getPostsByAuthor(authorId);
     }
 
     @GetMapping("/by-theme")
-    public List<Post> getPostsByTheme(@RequestParam UUID themeId) {
+    public List<PostResponse> getPostsByTheme(@RequestParam UUID themeId) {
         return postService.getPostsByTheme(themeId);
     }
 }
