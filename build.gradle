@@ -31,6 +31,8 @@ dependencies {
 
     implementation 'javax.servlet:javax.servlet-api:3.0.1'
 
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
