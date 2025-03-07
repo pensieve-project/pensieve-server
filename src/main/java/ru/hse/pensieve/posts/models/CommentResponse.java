@@ -10,13 +10,9 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostResponse {
-    private UUID themeId;
-    private UUID authorId;
+public class CommentResponse {
     private UUID postId;
-    private byte[] photo;
+    private UUID commentId;
+    private UUID authorId;
     private String text;
-    private Instant timeStamp;
-    private int likesCount;
-    private int commentsCount;
 }

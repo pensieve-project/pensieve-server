@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS posts (
     text TEXT,
     timeStamp TIMESTAMP,
     likesCount INT,
+    commentsCount INT,
     PRIMARY KEY ((themeId), authorId, postId)
 );
 
@@ -24,13 +25,26 @@ CREATE TABLE IF NOT EXISTS themes (
 CREATE TABLE IF NOT EXISTS profiles (
     authorId UUID,
     description TEXT,
+    likedPostsIds LIST<UUID>,
     PRIMARY KEY ((authorId))
 );
 
+CREATE TABLE IF NOT EXISTS comments (
+    postId UUID,
+    commentId TIMEUUID,
+    authorId UUID,
+    text TEXT,
+    PRIMARY KEY ((postId), commentId)
+);
+
 CREATE MATERIALIZED VIEW IF NOT EXISTS posts_by_author AS
-SELECT themeId, authorId, postId, photo, text, timeStamp, likesCount
-FROM posts
+SELECT * FROM posts
 WHERE authorId IS NOT NULL AND themeId IS NOT NULL AND postId IS NOT NULL
 PRIMARY KEY ((authorId), themeId, postId);
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS posts_by_id AS
+SELECT * FROM posts
+WHERE authorId IS NOT NULL AND themeId IS NOT NULL AND postId IS NOT NULL
+PRIMARY KEY ((postId), authorId, themeId);
 
 INSERT INTO themes (themeId, authorId, title, timeStamp) values (a1b4720b-9671-4f8e-abac-2c75e37da506, d644e781-f3f7-4cee-8b41-a9ec4430cf23, 'Мой любимый питомец', '2024-03-02 15:30:00');

@@ -6,24 +6,17 @@ import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.Getter;
 
-import java.nio.ByteBuffer;
-import java.time.Instant;
 import java.util.UUID;
 
 @AllArgsConstructor
 @Getter
 @Setter
-@Table("posts_by_author")
-public class PostByAuthor {
+@Table("comments")
+public class Comment {
 
     @PrimaryKey
-    private PostByAuthorKey key;
+    private CommentKey key;
 
-    private ByteBuffer photo;
+    private UUID authorId;
     private String text;
-    private Instant timeStamp;
-    // geo
-    // friends
-    private int likesCount;
-    private int commentsCount;
 }

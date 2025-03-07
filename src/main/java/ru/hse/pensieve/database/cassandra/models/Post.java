@@ -8,7 +8,6 @@ import lombok.Getter;
 
 import java.nio.ByteBuffer;
 import java.time.Instant;
-import java.util.UUID;
 
 @AllArgsConstructor
 @Getter
@@ -25,4 +24,5 @@ public class Post {
     // geo
     // friends
     private int likesCount;
+    private int commentsCount;
 }

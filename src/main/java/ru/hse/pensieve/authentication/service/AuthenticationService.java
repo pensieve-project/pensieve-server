@@ -10,6 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import ru.hse.pensieve.authentication.models.*;
 import ru.hse.pensieve.database.postgres.models.User;
 import ru.hse.pensieve.database.postgres.repositories.UserRepository;
+import ru.hse.pensieve.users.service.ProfileService;
 
 @Service
 public class AuthenticationService {
@@ -19,6 +20,9 @@ public class AuthenticationService {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private ProfileService profileService; //!!
 
     public CompletableFuture<AuthenticationResponse> login(AuthenticationRequest request) {
         return CompletableFuture.supplyAsync(() -> {
@@ -59,6 +63,7 @@ public class AuthenticationService {
             final String refreshToken = jwtService.generateRefreshToken(user);
             user.setRefreshToken(refreshToken);
             User userWithId = userRepository.save(user);
+            profileService.createProfile(userWithId); // !!
             return new AuthenticationResponse(
                     userWithId.getId(),
                     userWithId.getUsername(),

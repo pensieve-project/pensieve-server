@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -20,4 +21,5 @@ public class Profile {
     // avatar
     private String description;
     // arrayLikedThreadIds
+    private ArrayList<UUID> likedPostsIds;
 }

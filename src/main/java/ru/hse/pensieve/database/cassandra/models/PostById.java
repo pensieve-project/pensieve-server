@@ -13,11 +13,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table("posts_by_author")
-public class PostByAuthor {
+@Table("posts_by_id")
+public class PostById {
 
     @PrimaryKey
-    private PostByAuthorKey key;
+    private PostByIdKey key;
 
     private ByteBuffer photo;
     private String text;
