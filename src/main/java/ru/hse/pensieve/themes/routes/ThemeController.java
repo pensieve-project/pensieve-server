@@ -1,33 +1,30 @@
 package ru.hse.pensieve.themes.routes;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.hse.pensieve.database.cassandra.models.Theme;
 import ru.hse.pensieve.themes.models.ThemeRequest;
 import ru.hse.pensieve.themes.models.ThemeResponse;
 import ru.hse.pensieve.themes.service.ThemeService;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/themes")
 public class ThemeController {
 
-    private final ThemeService themeService;
-
     @Autowired
-    public ThemeController(ThemeService themeService) {
-        this.themeService = themeService;
-    }
+    private ThemeService themeService;
 
     @PostMapping
-    public ThemeResponse createTheme(@RequestBody ThemeRequest request) {
-        return themeService.createTheme(request);
+    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest request) {
+        ThemeResponse response = themeService.createTheme(request);
+        return ResponseEntity.status(201).body(response);
     }
 
     @GetMapping
-    public List<ThemeResponse> getAllThemes() {
-        return themeService.getAllThemes();
+    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
+        List<ThemeResponse> themes = themeService.getAllThemes();
+        return ResponseEntity.ok(themes);
     }
 }

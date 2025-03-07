@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS posts (
     themeId UUID,
     authorId UUID,
     postId UUID,
+    photo BLOB,
     text TEXT,
     timeStamp TIMESTAMP,
     likesCount INT,
@@ -27,7 +28,7 @@ CREATE TABLE IF NOT EXISTS profiles (
 );
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS posts_by_author AS
-SELECT themeId, authorId, postId, text, timeStamp, likesCount
+SELECT themeId, authorId, postId, photo, text, timeStamp, likesCount
 FROM posts
 WHERE authorId IS NOT NULL AND themeId IS NOT NULL AND postId IS NOT NULL
 PRIMARY KEY ((authorId), themeId, postId);

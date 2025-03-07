@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.Getter;
 
+import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -18,9 +19,10 @@ public class PostByAuthor {
     @PrimaryKey
     private PostByAuthorKey key;
 
+    private ByteBuffer photo;
     private String text;
     private Instant timeStamp;
-    // image
     // geo
+    // friends
     private int likesCount;
 }

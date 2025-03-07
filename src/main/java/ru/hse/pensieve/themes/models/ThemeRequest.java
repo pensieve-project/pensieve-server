@@ -1,8 +1,8 @@
 package ru.hse.pensieve.themes.models;
 
-import java.time.Instant;
-import java.util.UUID;
 import lombok.*;
+
+import java.util.UUID;
 
 @Getter
 @Setter
