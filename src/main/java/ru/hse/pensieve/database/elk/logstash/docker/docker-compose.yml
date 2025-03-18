@@ -1,0 +1,14 @@
+services:
+  logstash:
+    build: .
+    container_name: logstash
+    environment:
+      - LS_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "5044:5044"
+    networks:
+      - cassandra-elk-network
+
+networks:
+  cassandra-elk-network:
+    name: cassandra-elk-network
