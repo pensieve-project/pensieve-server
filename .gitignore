@@ -5,6 +5,10 @@ build/
 !**/src/test/**/build/
 src/main/resources/application.properties
 
+*.crt
+*.key
+src/main/java/ru/hse/pensieve/database/elk/certs/
+
 ### IntelliJ IDEA ###
 .idea
 .idea/modules.xml
