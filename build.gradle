@@ -18,6 +18,8 @@ repositories {
 }
 
 dependencies {
+    implementation 'co.elastic.clients:elasticsearch-java:8.11.1'
+
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
@@ -28,10 +30,13 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security"
 
     implementation 'org.springframework.boot:spring-boot-starter-data-cassandra'
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 
     implementation 'javax.servlet:javax.servlet-api:3.0.1'
 
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

@@ -2,8 +2,14 @@ services:
   logstash:
     build: .
     container_name: logstash
+    volumes:
+      - ../../certs:/usr/share/logstash/config/certs
     environment:
       - LS_JAVA_OPTS=-Xms512m -Xmx512m
+      - CASSANDRA_USER=${CASSANDRA_USER}
+      - CASSANDRA_PASSWORD=${CASSANDRA_PASSWORD}
+      - ELASTIC_USER=${ELASTIC_USER}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     ports:
       - "5044:5044"
     networks:

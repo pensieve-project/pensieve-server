@@ -1,6 +1,6 @@
 services:
   cassandra:
-    image: cassandra:latest
+    build: .
     container_name: cassandra
     ports:
       - "9042:9042"
