@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.hse.pensieve.database.cassandra.models.Theme;
 import ru.hse.pensieve.database.cassandra.models.ThemeKey;
 import ru.hse.pensieve.database.cassandra.repositories.ThemeRepository;
+import ru.hse.pensieve.database.elk.elasticsearch.models.EsThemeDocument;
 import ru.hse.pensieve.themes.models.ThemeMapper;
 import ru.hse.pensieve.themes.models.ThemeRequest;
 import ru.hse.pensieve.themes.models.ThemeResponse;
@@ -39,7 +40,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> searchThemes(String query) throws IOException {
-        SearchResponse<ThemeResponse> response = esClient.search(s -> s
+        SearchResponse<EsThemeDocument> response = esClient.search(s -> s
                         .index("themes_index")
                         .query(q -> q
                                 .match(m -> m
@@ -47,12 +48,13 @@ public class ThemeService {
                                         .query(query)
                                 )
                         ),
-                ThemeResponse.class
+                EsThemeDocument.class
         );
 
         return response.hits().hits().stream()
                 .map(Hit::source)
                 .filter(Objects::nonNull)
+                .map(ThemeMapper::fromEsTheme)
                 .toList();
     }
 }
