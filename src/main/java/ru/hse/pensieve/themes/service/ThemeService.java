@@ -10,6 +10,7 @@ import ru.hse.pensieve.themes.models.ThemeResponse;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,6 +27,14 @@ public class ThemeService {
 
     public List<ThemeResponse> getAllThemes() {
         return themeRepository.findAll().stream().map(ThemeMapper::fromTheme).toList();
+    }
+
+    public String getThemeTitle(UUID themeId) {
+        Optional<Theme> theme = themeRepository.findById(themeId);
+        if (theme.isEmpty()) {
+            return "";
+        }
+        return theme.get().getTitle();
     }
 
 }

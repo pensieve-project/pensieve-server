@@ -8,6 +8,7 @@ import ru.hse.pensieve.themes.models.ThemeResponse;
 import ru.hse.pensieve.themes.service.ThemeService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/themes")
@@ -26,5 +27,10 @@ public class ThemeController {
     public ResponseEntity<List<ThemeResponse>> getAllThemes() {
         List<ThemeResponse> themes = themeService.getAllThemes();
         return ResponseEntity.ok(themes);
+    }
+
+    @GetMapping("/title")
+    public ResponseEntity<String> getThemeTitle(@RequestParam UUID themeId) {
+        return ResponseEntity.ok(themeService.getThemeTitle(themeId));
     }
 }
