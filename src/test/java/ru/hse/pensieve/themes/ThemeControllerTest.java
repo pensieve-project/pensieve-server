@@ -66,4 +66,17 @@ public class ThemeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title", is("Some title")));
     }
+
+    @Test
+    public void testGetThemeTitle() throws Exception {
+        UUID themeId = UUID.randomUUID();
+
+        when(themeService.getThemeTitle(themeId)).thenReturn("Some title");
+
+        mockMvc.perform(get("/themes/title")
+                        .param("themeId", themeId.toString()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
+                .andExpect(content().string("Some title"));
+    }
 }
