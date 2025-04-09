@@ -3,7 +3,6 @@ package ru.hse.pensieve.themes.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hse.pensieve.database.cassandra.models.Theme;
-import ru.hse.pensieve.database.cassandra.models.ThemeKey;
 import ru.hse.pensieve.database.cassandra.repositories.ThemeRepository;
 import ru.hse.pensieve.themes.models.ThemeMapper;
 import ru.hse.pensieve.themes.models.ThemeRequest;
@@ -20,8 +19,7 @@ public class ThemeService {
     private ThemeRepository themeRepository;
 
     public ThemeResponse createTheme(ThemeRequest request) {
-        ThemeKey key = new ThemeKey(UUID.randomUUID(), request.getAuthorId());
-        Theme theme = new Theme(key, request.getTitle(), Instant.now());
+        Theme theme = new Theme(UUID.randomUUID(), request.getAuthorId(), request.getTitle(), Instant.now());
         Theme newTheme = themeRepository.save(theme);
         return ThemeMapper.fromTheme(newTheme);
     }

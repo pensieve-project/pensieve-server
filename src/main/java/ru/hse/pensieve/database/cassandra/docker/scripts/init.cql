@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS themes (
     authorId UUID,
     title TEXT,
     timeStamp TIMESTAMP,
-    PRIMARY KEY ((themeId), authorId)
+    PRIMARY KEY ((themeId))
 );
 
 CREATE TABLE IF NOT EXISTS profiles (

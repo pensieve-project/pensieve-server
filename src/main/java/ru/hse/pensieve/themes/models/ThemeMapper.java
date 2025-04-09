@@ -5,8 +5,8 @@ import ru.hse.pensieve.database.cassandra.models.Theme;
 public class ThemeMapper {
     public static ThemeResponse fromTheme(Theme theme) {
         return new ThemeResponse(
-                theme.getKey().getThemeId(),
-                theme.getKey().getAuthorId(),
+                theme.getThemeId(),
+                theme.getAuthorId(),
                 theme.getTitle(),
                 theme.getTimeStamp()
         );
