@@ -1,4 +1,4 @@
-package ru.hse.pensieve;
+package ru.hse.pensieve.authentication;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
