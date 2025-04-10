@@ -4,6 +4,15 @@ from uuid import uuid4, uuid1
 from faker import Faker
 import random
 from datetime import datetime
+import os
+
+PHOTO_DIR = './images'
+photo_files = [os.path.join(PHOTO_DIR, f) for f in os.listdir(PHOTO_DIR) if f.endswith('.jpg') or f.endswith('.PNG')]
+
+def get_random_photo_blob():
+    file_path = random.choice(photo_files)
+    with open(file_path, 'rb') as f:
+        return f.read()
 
 cluster = Cluster(['127.0.0.1'], port=9042)
 session = cluster.connect('pensieve')
@@ -41,6 +50,7 @@ for _ in range(50):
     theme_id = random.choice(themes)
     author_id = random.choice(authors)
     post_id = uuid4()
+    photo_blob = get_random_photo_blob()
     text = fake.paragraph(nb_sentences=3)
     timestamp = fake.date_time_between(start_date='-1y', end_date='now')
     likes = 0
@@ -49,7 +59,7 @@ for _ in range(50):
 
     session.execute(
         "INSERT INTO posts (themeId, authorId, postId, photo, text, timeStamp, likesCount, commentsCount) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-        (theme_id, author_id, post_id, None, text, timestamp, likes, comments)
+        (theme_id, author_id, post_id, photo_blob, text, timestamp, likes, comments)
     )
 
 # LIKES
