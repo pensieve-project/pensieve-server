@@ -43,6 +43,10 @@ public class PostService {
         return PostMapper.fromPost(newPost);
     }
 
+    public List<PostResponse> getAllPosts() {
+        return postRepository.findAll().stream().map(PostMapper::fromPost).toList();
+    }
+
     public List<PostResponse> getPostsByAuthor(UUID authorId) {
         return postByAuthorRepository.findByKeyAuthorId(authorId).stream().map(PostMapper::fromPostByAuthor).toList();
     }

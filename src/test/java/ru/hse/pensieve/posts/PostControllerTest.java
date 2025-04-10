@@ -77,6 +77,18 @@ public class PostControllerTest {
     }
 
     @Test
+    public void testGetAllPosts() throws Exception {
+        PostResponse response = new PostResponse();
+        response.setText("Some post");
+
+        when(postService.getAllPosts()).thenReturn(List.of(response));
+
+        mockMvc.perform(get("/posts"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].text", is("Some post")));
+    }
+
+    @Test
     public void testGetPostsByAuthor() throws Exception {
         UUID authorId = UUID.randomUUID();
         PostResponse response = new PostResponse();

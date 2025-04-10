@@ -29,6 +29,12 @@ public class PostController {
         return ResponseEntity.status(201).body(response);
     }
 
+    @GetMapping
+    public ResponseEntity<List<PostResponse>> getAllPosts() {
+        List<PostResponse> posts = postService.getAllPosts();
+        return ResponseEntity.ok(posts);
+    }
+
     @GetMapping("/by-author")
     public ResponseEntity<List<PostResponse>> getPostsByAuthor(@RequestParam UUID authorId) {
         List<PostResponse> posts = postService.getPostsByAuthor(authorId);
