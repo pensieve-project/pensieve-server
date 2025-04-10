@@ -1,18 +1,27 @@
 from cassandra.cluster import Cluster
 from cassandra.query import SimpleStatement
-from uuid import uuid4, uuid1
+from uuid import uuid4, uuid1, UUID
 from faker import Faker
 import random
 from datetime import datetime
 import os
+import json
 
 PHOTO_DIR = './images'
-photo_files = [os.path.join(PHOTO_DIR, f) for f in os.listdir(PHOTO_DIR) if f.endswith('.jpg') or f.endswith('.PNG')]
+THEMES_JSON_PATH = './themes.json'
 
-def get_random_photo_blob():
-    file_path = random.choice(photo_files)
-    with open(file_path, 'rb') as f:
-        return f.read()
+with open(THEMES_JSON_PATH) as f:
+    raw_themes = json.load(f)
+
+theme_map = {}
+for theme in raw_themes:
+    theme_id = uuid4()
+    image_path = os.path.join(PHOTO_DIR, theme['image_path'])
+    with open(image_path, 'rb') as img_file:
+        theme_map[theme_id] = {
+            "title": theme['title'],
+            "photo": img_file.read()
+        }
 
 cluster = Cluster(['127.0.0.1'], port=9042)
 session = cluster.connect('pensieve')
@@ -32,10 +41,9 @@ for author_id in authors:
 
 # THEMES
 themes = []
-for _ in range(10):
-    theme_id = uuid4()
+for theme_id, data in theme_map.items():
     author_id = random.choice(authors)
-    title = fake.sentence(nb_words=3)[:-1]
+    title = data['title']
     timestamp = fake.date_time_between(start_date='-2y', end_date='now')
     themes.append(theme_id)
 
@@ -46,11 +54,10 @@ for _ in range(10):
 
 # POSTS
 posts = []
-for _ in range(50):
-    theme_id = random.choice(themes)
+for theme_id in themes:
     author_id = random.choice(authors)
     post_id = uuid4()
-    photo_blob = get_random_photo_blob()
+    photo_blob = theme_map[theme_id]['photo']
     text = fake.paragraph(nb_sentences=3)
     timestamp = fake.date_time_between(start_date='-1y', end_date='now')
     likes = 0
