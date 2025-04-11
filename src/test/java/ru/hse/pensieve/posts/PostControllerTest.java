@@ -117,6 +117,20 @@ public class PostControllerTest {
     }
 
     @Test
+    public void testGetPostById() throws Exception {
+        UUID postId = UUID.randomUUID();
+        PostResponse response = new PostResponse();
+        response.setText("Some post");
+
+        when(postService.getPostById(postId)).thenReturn(response);
+
+        mockMvc.perform(get("/posts/by-id")
+                        .param("postId", postId.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text", is("Some post")));
+    }
+
+    @Test
     public void testLikePost() throws Exception {
         LikeRequest request = new LikeRequest(UUID.randomUUID(), UUID.randomUUID());
 

@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -53,6 +54,10 @@ public class PostService {
 
     public List<PostResponse> getPostsByTheme(UUID themeId) {
         return postRepository.findByKeyThemeId(themeId).stream().map(PostMapper::fromPost).toList();
+    }
+
+    public PostResponse getPostById(UUID postId) {
+        return postByIdRepository.findByKeyPostId(postId).stream().map(PostMapper::fromPostById).findFirst().orElse(null);
     }
 
     public void likePost(LikeRequest request) {

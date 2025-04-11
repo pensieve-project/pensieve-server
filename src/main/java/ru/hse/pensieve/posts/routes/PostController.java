@@ -47,6 +47,12 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
+    @GetMapping("/by-id")
+    public ResponseEntity<PostResponse> getPostById(@RequestParam UUID postId) {
+        PostResponse post = postService.getPostById(postId);
+        return ResponseEntity.ok(post);
+    }
+
     @PostMapping("/like")
     public ResponseEntity<?> likePost(@RequestBody LikeRequest request) {
         postService.likePost(request);
