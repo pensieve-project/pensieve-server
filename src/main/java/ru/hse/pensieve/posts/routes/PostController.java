@@ -60,8 +60,8 @@ public class PostController {
     }
 
     @GetMapping("/liked")
-    public ResponseEntity<Boolean> hasUserLikedPost(@RequestBody LikeRequest request) {
-        return ResponseEntity.ok(postService.hasUserLikedPost(request));
+    public ResponseEntity<Boolean> hasUserLikedPost(@RequestParam UUID authorId, @RequestParam UUID postId) {
+        return ResponseEntity.ok(postService.hasUserLikedPost(new LikeRequest(authorId, postId)));
     }
 
     @GetMapping("/likes-count")

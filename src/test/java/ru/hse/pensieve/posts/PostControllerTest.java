@@ -143,8 +143,8 @@ public class PostControllerTest {
         when(postService.hasUserLikedPost(Mockito.any())).thenReturn(true);
 
         mockMvc.perform(get("/posts/liked")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .param("authorId", request.getAuthorId().toString())
+                        .param("postId", request.getPostId().toString()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
     }
