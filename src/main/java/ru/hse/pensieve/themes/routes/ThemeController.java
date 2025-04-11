@@ -3,6 +3,8 @@ package ru.hse.pensieve.themes.routes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import ru.hse.pensieve.themes.models.LikeRequest;
 import ru.hse.pensieve.themes.models.ThemeRequest;
 import ru.hse.pensieve.themes.models.ThemeResponse;
 import ru.hse.pensieve.themes.service.ThemeService;
@@ -32,5 +34,17 @@ public class ThemeController {
     @GetMapping("/title")
     public ResponseEntity<String> getThemeTitle(@RequestParam UUID themeId) {
         return ResponseEntity.ok(themeService.getThemeTitle(themeId));
+    }
+
+    @PostMapping("/like")
+    public ResponseEntity<?> likeTheme(@RequestBody LikeRequest request) {
+        themeService.likeTheme(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/unlike")
+    public ResponseEntity<?> unlikeTheme(@RequestBody LikeRequest request) {
+        themeService.unlikeTheme(request);
+        return ResponseEntity.ok().build();
     }
 }

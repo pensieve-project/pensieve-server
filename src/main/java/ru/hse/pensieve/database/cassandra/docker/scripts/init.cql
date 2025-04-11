@@ -24,7 +24,9 @@ CREATE TABLE IF NOT EXISTS themes (
 
 CREATE TABLE IF NOT EXISTS profiles (
     authorId UUID,
+    avatar BLOB,
     description TEXT,
+    likedThemesIds LIST<UUID>,
     likedPostsIds LIST<UUID>,
     PRIMARY KEY ((authorId))
 );

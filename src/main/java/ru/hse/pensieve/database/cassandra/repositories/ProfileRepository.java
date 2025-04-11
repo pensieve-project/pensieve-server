@@ -18,4 +18,12 @@ public interface ProfileRepository extends CassandraRepository<Profile, UUID> {
         }
         return false;
     }
+
+    default boolean hasLikedTheme(UUID authorId, UUID themeId) {
+        Profile profile = findByAuthorId(authorId);
+        if (profile != null && profile.getLikedThemesIds() != null) {
+            return profile.getLikedThemesIds().contains(themeId);
+        }
+        return false;
+    }
 }
