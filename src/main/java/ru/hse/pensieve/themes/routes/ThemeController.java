@@ -8,6 +8,7 @@ import ru.hse.pensieve.themes.models.ThemeResponse;
 import ru.hse.pensieve.themes.service.ThemeService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/themes")
@@ -19,7 +20,7 @@ public class ThemeController {
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest request) {
         ThemeResponse response = themeService.createTheme(request);
-        return ResponseEntity.status(201).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
@@ -35,5 +36,9 @@ public class ThemeController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
+  
+    @GetMapping("/title")
+    public ResponseEntity<String> getThemeTitle(@RequestParam UUID themeId) {
+        return ResponseEntity.ok(themeService.getThemeTitle(themeId));
     }
 }

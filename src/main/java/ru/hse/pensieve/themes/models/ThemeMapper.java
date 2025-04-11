@@ -6,8 +6,8 @@ import ru.hse.pensieve.database.elk.elasticsearch.models.EsThemeDocument;
 public class ThemeMapper {
     public static ThemeResponse fromTheme(Theme theme) {
         return new ThemeResponse(
-                theme.getKey().getThemeId(),
-                theme.getKey().getAuthorId(),
+                theme.getThemeId(),
+                theme.getAuthorId(),
                 theme.getTitle(),
                 theme.getTimeStamp()
         );
