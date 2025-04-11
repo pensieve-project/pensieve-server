@@ -1,0 +1,24 @@
+services:
+  elasticsearch:
+    build: .
+    container_name: elasticsearch
+    volumes:
+      - ../../certs:/usr/share/elasticsearch/config/certs
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certs/instance.key
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certs/instance.crt
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certs/ca.crt
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - cassandra-elk-network
+
+networks:
+  cassandra-elk-network:
+    name: cassandra-elk-network
