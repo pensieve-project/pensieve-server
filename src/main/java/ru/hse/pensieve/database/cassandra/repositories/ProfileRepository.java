@@ -1,11 +1,8 @@
 package ru.hse.pensieve.database.cassandra.repositories;
 
 import org.springframework.data.cassandra.repository.CassandraRepository;
-import org.springframework.data.cassandra.repository.Query;
 import ru.hse.pensieve.database.cassandra.models.Profile;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public interface ProfileRepository extends CassandraRepository<Profile, UUID> {

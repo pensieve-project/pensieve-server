@@ -9,6 +9,7 @@ import ru.hse.pensieve.profiles.models.ProfileRequest;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.UUID;
 
 @Service
 public class ProfileService {
@@ -34,5 +35,13 @@ public class ProfileService {
         profile.setAvatar(ByteBuffer.wrap(avatarBytes));
         profile.setDescription(request.getDescription());
         profileRepository.save(profile);
+    }
+
+    public Profile getProfileByAuthorId(UUID authorId) {
+        return profileRepository.findByAuthorId(authorId);
+    }
+
+    public ByteBuffer getAvatarByAuthorId(UUID authorId) {
+        return getProfileByAuthorId(authorId).getAvatar();
     }
 }

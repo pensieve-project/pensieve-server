@@ -3,10 +3,14 @@ package ru.hse.pensieve.profiles.routes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import ru.hse.pensieve.database.cassandra.models.Profile;
 import ru.hse.pensieve.profiles.models.ProfileRequest;
 import ru.hse.pensieve.profiles.service.ProfileService;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/profile")
@@ -15,8 +19,8 @@ public class ProfileController {
     @Autowired
     private ProfileService profileService;
 
-    @PostMapping("/create")
-    public ResponseEntity<String> createProfile(@RequestBody ProfileRequest request) {
+    @PostMapping
+    public ResponseEntity<?> createProfile(@RequestBody ProfileRequest request) {
         try {
             profileService.createProfile(request);
             return ResponseEntity.ok().build();
@@ -26,7 +30,7 @@ public class ProfileController {
     }
 
     @PutMapping("/edit")
-    public ResponseEntity<String> editProfile(@RequestBody ProfileRequest request) {
+    public ResponseEntity<?> editProfile(@RequestBody ProfileRequest request) {
         try {
             profileService.editProfile(request);
             return ResponseEntity.ok().build();
@@ -35,5 +39,15 @@ public class ProfileController {
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/by-authorId")
+    public ResponseEntity<Profile> getProfileByAuthorId(@RequestParam UUID authorId) {
+        return ResponseEntity.ok(profileService.getProfileByAuthorId(authorId));
+    }
+
+    @GetMapping("/avatar")
+    public ResponseEntity<ByteBuffer> getAvatarByAuthorId(@RequestParam UUID authorId) {
+        return ResponseEntity.ok(profileService.getAvatarByAuthorId(authorId));
     }
 }
