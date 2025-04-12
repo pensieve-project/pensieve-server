@@ -20,7 +20,7 @@ public class ProfileController {
     private ProfileService profileService;
 
     @PostMapping
-    public ResponseEntity<?> createProfile(@RequestBody ProfileRequest request) {
+    public ResponseEntity<?> createProfile(@ModelAttribute ProfileRequest request) {
         try {
             profileService.createProfile(request);
             return ResponseEntity.ok().build();
@@ -30,7 +30,7 @@ public class ProfileController {
     }
 
     @PutMapping("/edit")
-    public ResponseEntity<?> editProfile(@RequestBody ProfileRequest request) {
+    public ResponseEntity<?> editProfile(@ModelAttribute ProfileRequest request) {
         try {
             profileService.editProfile(request);
             return ResponseEntity.ok().build();
