@@ -1,16 +1,16 @@
 services:
   cassandra:
-    image: cassandra:latest
+    build: .
     container_name: cassandra
     ports:
       - "9042:9042"
     environment:
       - CASSANDRA_CLUSTER_NAME=MyCluster
     networks:
-      - cassandra-network
+      - cassandra-elk-network
     volumes:
       - ./scripts:/scripts
 
 networks:
-  cassandra-network:
-    driver: bridge
+  cassandra-elk-network:
+    name: cassandra-elk-network

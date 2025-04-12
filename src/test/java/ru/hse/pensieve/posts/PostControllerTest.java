@@ -77,6 +77,18 @@ public class PostControllerTest {
     }
 
     @Test
+    public void testGetAllPosts() throws Exception {
+        PostResponse response = new PostResponse();
+        response.setText("Some post");
+
+        when(postService.getAllPosts()).thenReturn(List.of(response));
+
+        mockMvc.perform(get("/posts"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].text", is("Some post")));
+    }
+
+    @Test
     public void testGetPostsByAuthor() throws Exception {
         UUID authorId = UUID.randomUUID();
         PostResponse response = new PostResponse();
@@ -102,6 +114,20 @@ public class PostControllerTest {
                         .param("themeId", themeId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].text", is("Some post")));
+    }
+
+    @Test
+    public void testGetPostById() throws Exception {
+        UUID postId = UUID.randomUUID();
+        PostResponse response = new PostResponse();
+        response.setText("Some post");
+
+        when(postService.getPostById(postId)).thenReturn(response);
+
+        mockMvc.perform(get("/posts/by-id")
+                        .param("postId", postId.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text", is("Some post")));
     }
 
     @Test
@@ -131,8 +157,8 @@ public class PostControllerTest {
         when(postService.hasUserLikedPost(Mockito.any())).thenReturn(true);
 
         mockMvc.perform(get("/posts/liked")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .param("authorId", request.getAuthorId().toString())
+                        .param("postId", request.getPostId().toString()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
     }

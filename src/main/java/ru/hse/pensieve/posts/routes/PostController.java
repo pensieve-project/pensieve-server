@@ -29,6 +29,12 @@ public class PostController {
         return ResponseEntity.status(201).body(response);
     }
 
+    @GetMapping
+    public ResponseEntity<List<PostResponse>> getAllPosts() {
+        List<PostResponse> posts = postService.getAllPosts();
+        return ResponseEntity.ok(posts);
+    }
+
     @GetMapping("/by-author")
     public ResponseEntity<List<PostResponse>> getPostsByAuthor(@RequestParam UUID authorId) {
         List<PostResponse> posts = postService.getPostsByAuthor(authorId);
@@ -39,6 +45,12 @@ public class PostController {
     public ResponseEntity<List<PostResponse>> getPostsByTheme(@RequestParam UUID themeId) {
         List<PostResponse> posts = postService.getPostsByTheme(themeId);
         return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("/by-id")
+    public ResponseEntity<PostResponse> getPostById(@RequestParam UUID postId) {
+        PostResponse post = postService.getPostById(postId);
+        return ResponseEntity.ok(post);
     }
 
     @PostMapping("/like")
@@ -54,8 +66,8 @@ public class PostController {
     }
 
     @GetMapping("/liked")
-    public ResponseEntity<Boolean> hasUserLikedPost(@RequestBody LikeRequest request) {
-        return ResponseEntity.ok(postService.hasUserLikedPost(request));
+    public ResponseEntity<Boolean> hasUserLikedPost(@RequestParam UUID authorId, @RequestParam UUID postId) {
+        return ResponseEntity.ok(postService.hasUserLikedPost(new LikeRequest(authorId, postId)));
     }
 
     @GetMapping("/likes-count")
