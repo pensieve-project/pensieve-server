@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.Getter;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -17,9 +18,8 @@ public class Profile {
 
     @PrimaryKey
     private UUID authorId;
-
-    // avatar
+    private ByteBuffer avatar;
     private String description;
-    // arrayLikedThreadIds
+    private ArrayList<UUID> likedThemesIds;
     private ArrayList<UUID> likedPostsIds;
 }

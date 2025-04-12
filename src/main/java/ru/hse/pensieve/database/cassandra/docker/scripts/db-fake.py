@@ -32,11 +32,12 @@ fake = Faker()
 authors = [uuid4() for _ in range(50)]
 for author_id in authors:
     description = fake.text(max_nb_chars=150)
+    liked_themes_ids = []
     liked_posts_ids = []
 
     session.execute(
-        "INSERT INTO profiles (authorId, description, likedPostsIds) VALUES (%s, %s, %s)",
-        (author_id, description, liked_posts_ids)
+        "INSERT INTO profiles (authorId, avatar, description, likedThemesIds, likedPostsIds) VALUES (%s, %s, %s, %s, %s)",
+        (author_id, None, description, liked_posts_ids, liked_themes_ids)
     )
 
 # THEMES
