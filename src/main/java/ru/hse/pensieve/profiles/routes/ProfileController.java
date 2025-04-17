@@ -10,6 +10,7 @@ import ru.hse.pensieve.profiles.service.ProfileService;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -49,5 +50,10 @@ public class ProfileController {
     @GetMapping("/avatar")
     public ResponseEntity<ByteBuffer> getAvatarByAuthorId(@RequestParam UUID authorId) {
         return ResponseEntity.ok(profileService.getAvatarByAuthorId(authorId));
+    }
+
+    @GetMapping("/username")
+    public ResponseEntity<String> getUsernameByAuthorId(@RequestParam UUID authorId) {
+        return ResponseEntity.ok(profileService.getUsernameByAuthorId(authorId));
     }
 }

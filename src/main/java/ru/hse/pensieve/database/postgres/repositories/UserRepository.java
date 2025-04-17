@@ -17,7 +17,7 @@ public interface UserRepository extends CrudRepository<User, UUID> {
     @Query("SELECT u.salt FROM User u WHERE u.email = :email")
     Optional<String> findSaltByEmail(@Param("email") String email);
     @Query("SELECT u.username FROM User u WHERE u.id = :id")
-    Optional<String> findUsernameById(@Param("id") UUID id);
+    String findUsernameById(@Param("id") UUID id);
     Optional<User> findUserByEmailAndPasswordHash(String email, String passwordHash);
     @Modifying
     @Transactional
