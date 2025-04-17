@@ -17,8 +17,8 @@ services:
       - "9200:9200"
       - "9300:9300"
     networks:
-      - cassandra-elk-network
+      - pensieve-network
 
 networks:
-  cassandra-elk-network:
-    name: cassandra-elk-network
+  pensieve-network:
+    name: pensieve-network

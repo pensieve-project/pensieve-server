@@ -1,0 +1,12 @@
+{
+  "index_patterns": ["users_index*"],
+  "template": {
+    "mappings": {
+      "properties": {
+        "suggest": {
+          "type": "completion"
+        }
+      }
+    }
+  }
+}
