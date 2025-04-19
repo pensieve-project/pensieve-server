@@ -28,6 +28,8 @@ CREATE TABLE IF NOT EXISTS profiles (
     description TEXT,
     likedThemesIds LIST<UUID>,
     likedPostsIds LIST<UUID>,
+    subscriptionsCount INT,
+    subscribersCount INT,
     PRIMARY KEY ((authorId))
 );
 
@@ -37,6 +39,20 @@ CREATE TABLE IF NOT EXISTS comments (
     authorId UUID,
     text TEXT,
     PRIMARY KEY ((postId), commentId)
+);
+
+CREATE TABLE IF NOT EXISTS subscriptions_by_subscriber (
+    subscriberId UUID,
+    targetId UUID,
+    timeStamp TIMESTAMP,
+    PRIMARY KEY (subscriberId, targetId)
+);
+
+CREATE TABLE IF NOT EXISTS subscribers_by_target (
+    targetId UUID,
+    subscriberId UUID,
+    timeStamp TIMESTAMP,
+    PRIMARY KEY (targetId, subscriberId)
 );
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS posts_by_author AS

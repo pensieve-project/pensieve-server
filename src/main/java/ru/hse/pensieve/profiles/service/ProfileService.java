@@ -22,7 +22,7 @@ public class ProfileService {
         if (avatarBytes == null) {
             throw new IOException();
         }
-        Profile profile = new Profile(request.getAuthorId(), ByteBuffer.wrap(avatarBytes), request.getDescription(), new ArrayList<>(), new ArrayList<>());
+        Profile profile = new Profile(request.getAuthorId(), ByteBuffer.wrap(avatarBytes), request.getDescription(), new ArrayList<>(), new ArrayList<>(), 0, 0);
         profileRepository.save(profile);
     }
 

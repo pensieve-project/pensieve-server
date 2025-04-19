@@ -22,4 +22,6 @@ public class Profile {
     private String description;
     private ArrayList<UUID> likedThemesIds;
     private ArrayList<UUID> likedPostsIds;
+    private Integer subscriptionsCount;
+    private Integer subscribersCount;
 }

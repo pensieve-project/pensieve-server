@@ -36,8 +36,8 @@ for author_id in authors:
     liked_posts_ids = []
 
     session.execute(
-        "INSERT INTO profiles (authorId, avatar, description, likedThemesIds, likedPostsIds) VALUES (%s, %s, %s, %s, %s)",
-        (author_id, None, description, liked_posts_ids, liked_themes_ids)
+        "INSERT INTO profiles (authorId, avatar, description, likedThemesIds, likedPostsIds, subscriptionsCount, subscribersCount) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+        (author_id, None, description, liked_posts_ids, liked_themes_ids, 0, 0)
     )
 
 # THEMES
@@ -114,4 +114,50 @@ for _ in range(100):
         session.execute(
             "UPDATE posts SET commentsCount = %s WHERE themeId = %s AND authorId = %s AND postId = %s",
             (new_comments, theme_id, author_id, post_id)
+        )
+
+# SUBSCRIPTIONS
+subscriptions = set()
+num_subscriptions = 200
+for _ in range(num_subscriptions):
+    subscriber_id = random.choice(authors)
+    target_id = random.choice(authors)
+
+    while subscriber_id == target_id or (subscriber_id, target_id) in subscriptions:
+        subscriber_id = random.choice(authors)
+        target_id = random.choice(authors)
+
+    subscriptions.add((subscriber_id, target_id))
+    timestamp = fake.date_time_between(start_date='-1y', end_date='now')
+
+    session.execute(
+        "INSERT INTO subscriptions_by_subscriber (subscriberId, targetId, timeStamp) VALUES (%s, %s, %s)",
+        (subscriber_id, target_id, timestamp)
+    )
+
+    session.execute(
+        "INSERT INTO subscribers_by_target (targetId, subscriberId, timeStamp) VALUES (%s, %s, %s)",
+        (target_id, subscriber_id, timestamp)
+    )
+
+    row = session.execute(
+        "SELECT subscriptionsCount FROM profiles WHERE authorId = %s",
+        (subscriber_id,)
+    ).one()
+    if row:
+        new_subs = row.subscriptionscount + 1
+        session.execute(
+            "UPDATE profiles SET subscriptionsCount = %s WHERE authorId = %s",
+            (new_subs, subscriber_id)
+        )
+
+    row = session.execute(
+        "SELECT subscribersCount FROM profiles WHERE authorId = %s",
+        (target_id,)
+    ).one()
+    if row:
+        new_subs = row.subscriberscount + 1
+        session.execute(
+            "UPDATE profiles SET subscribersCount = %s WHERE authorId = %s",
+            (new_subs, target_id)
         )
