@@ -17,7 +17,10 @@ import java.util.stream.Collectors;
 
 public interface UserFeedRepository extends CassandraRepository<UserFeed, UserFeedKey> {
     @Query("SELECT * FROM user_feed WHERE userId = ?0 AND bucket = ?1 AND timeStamp < ?2 LIMIT ?3")
-    List<UserFeed> findFeedPage(UUID userId, int bucket, Instant lastSeenTime, int limit);
+    List<UserFeed> findFeedPageInBucket(UUID userId, int bucket, Instant lastSeenTime, int limit);
+
+    @Query("SELECT * FROM user_feed WHERE userId = ?0 AND bucket = ?1")
+    List<UserFeed> findAllByUserIdAndBucket(UUID userId, int bucket);
 
     default List<UserFeed> findUserFeed(UUID userId, int limit, Instant lastSeenTime) {
         int buckets = BucketConfig.getBucketCount();
@@ -27,7 +30,7 @@ public interface UserFeedRepository extends CassandraRepository<UserFeed, UserFe
 
         for (int bucket = 0; bucket < buckets; bucket++) {
             int finalBucket = bucket;
-            futures.set(bucket, CompletableFuture.supplyAsync(() -> findFeedPage(userId, finalBucket, lastSeenTime, perBucketLimit), FeedTaskExecutor.getExecutor()));
+            futures.add(CompletableFuture.supplyAsync(() -> findFeedPageInBucket(userId, finalBucket, lastSeenTime, perBucketLimit), FeedTaskExecutor.getExecutor()));
         }
 
         return futures.stream()
@@ -37,4 +40,23 @@ public interface UserFeedRepository extends CassandraRepository<UserFeed, UserFe
                 .limit(limit)
                 .collect(Collectors.toList());
     }
+
+    default void removePostsByAuthorFromFeed(UUID userId, UUID authorId) {
+        int buckets = BucketConfig.getBucketCount();
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        for (int bucket = 0; bucket < buckets; bucket++) {
+            int finalBucket = bucket;
+            futures.add(CompletableFuture.runAsync(() -> {
+                List<UserFeed> bucketPosts = findAllByUserIdAndBucket(userId, finalBucket);
+                List<UserFeed> postsToDelete = bucketPosts.stream()
+                        .filter(post -> post.getAuthorId().equals(authorId))
+                        .collect(Collectors.toList());
+                deleteAll(postsToDelete);
+            }, FeedTaskExecutor.getExecutor()));
+        }
+
+        futures.forEach(CompletableFuture::join);
+    }
+
 }

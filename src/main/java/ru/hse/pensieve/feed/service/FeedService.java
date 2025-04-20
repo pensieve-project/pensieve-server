@@ -51,7 +51,7 @@ public class FeedService {
 
         return Stream.concat(regularPosts.stream(), vipPosts.stream())
                 .sorted(Comparator.comparing(Post::getTimeStamp).reversed())
-                .limit(request.getLimit())
+                .limit(limit)
                 .map(PostMapper::fromPost)
                 .collect(Collectors.toList());
     }

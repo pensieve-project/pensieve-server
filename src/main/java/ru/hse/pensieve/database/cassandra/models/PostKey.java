@@ -3,6 +3,7 @@ package ru.hse.pensieve.database.cassandra.models;
 import java.io.Serializable;
 import java.util.UUID;
 
+import lombok.NoArgsConstructor;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyClass;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
@@ -11,6 +12,7 @@ import lombok.Setter;
 import lombok.Getter;
 
 @AllArgsConstructor
+@NoArgsConstructor(force = true)
 @Getter
 @Setter
 @PrimaryKeyClass

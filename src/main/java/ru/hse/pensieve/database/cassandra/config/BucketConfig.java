@@ -11,13 +11,17 @@ import java.util.UUID;
 public class BucketConfig {
 
     @Getter
+    private static int bucketCount;
+
     @Value("${cassandra.feed.buckets.count}")
-    static private int bucketCount;
+    public void setBucketCount(int count) {
+        bucketCount = count;
+    }
 
     @Value("${cassandra.feed.max-partition-size-mb}")
     private int maxPartitionSizeMB;
 
-    public int getBucket(UUID postId) {
+    static public int getBucket(UUID postId) {
         return Math.abs(postId.hashCode()) % bucketCount;
     }
 

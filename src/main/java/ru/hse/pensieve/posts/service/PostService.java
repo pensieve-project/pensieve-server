@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hse.pensieve.database.cassandra.models.*;
 import ru.hse.pensieve.database.cassandra.repositories.*;
+import ru.hse.pensieve.posts.kafka.PostEventProducer;
 import ru.hse.pensieve.posts.models.*;
 
 import java.io.IOException;
@@ -36,6 +37,9 @@ public class PostService {
     @Autowired
     private VipPostRepository vipPostRepository;
 
+    @Autowired
+    private PostEventProducer postEventProducer;
+
     public PostResponse savePost(PostRequest request) throws IOException {
         PostKey postKey = new PostKey(request.getThemeId(), request.getAuthorId(), UUID.randomUUID());
         byte[] photoBytes = (request.getPhoto() != null && !request.getPhoto().isEmpty()) ? request.getPhoto().getBytes() : null;
@@ -50,7 +54,7 @@ public class PostService {
             vipPostRepository.save(PostMapper.vipFromPost(post));
             // redis
         } else {
-            // kafka
+            postEventProducer.sendPostCreated(post);
         }
 
         return PostMapper.fromPost(post);

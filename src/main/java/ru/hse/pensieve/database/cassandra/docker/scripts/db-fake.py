@@ -36,8 +36,8 @@ for author_id in authors:
     liked_posts_ids = []
 
     session.execute(
-        "INSERT INTO profiles (authorId, avatar, description, likedThemesIds, likedPostsIds, subscriptionsCount, subscribersCount) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-        (author_id, None, description, liked_posts_ids, liked_themes_ids, 0, 0)
+        "INSERT INTO profiles (authorId, avatar, description, likedThemesIds, likedPostsIds, subscriptionsCount, subscribersCount, isVip) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+        (author_id, None, description, liked_posts_ids, liked_themes_ids, 0, 0, False)
     )
 
 # THEMES

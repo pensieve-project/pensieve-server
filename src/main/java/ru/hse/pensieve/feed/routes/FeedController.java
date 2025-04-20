@@ -16,7 +16,7 @@ public class FeedController {
     @Autowired
     private FeedService feedService;
 
-    @PostMapping
+    @GetMapping("/subscriptions")
     public ResponseEntity<List<PostResponse>> getSubscriptionsFeed(@RequestBody SubscriptionsFeedRequest request) {
         return ResponseEntity.ok(feedService.getSubscriptionsFeed(request));
     }

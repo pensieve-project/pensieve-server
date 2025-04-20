@@ -2,6 +2,8 @@ package ru.hse.pensieve.posts.models;
 
 import ru.hse.pensieve.database.cassandra.models.*;
 
+import java.util.UUID;
+
 public class PostMapper {
     public static PostResponse fromPost(Post post) {
         return new PostResponse(
@@ -84,6 +86,40 @@ public class PostMapper {
                 vipPost.getKey().getTimeStamp(),
                 vipPost.getLikesCount(),
                 vipPost.getCommentsCount()
+        );
+    }
+
+    public static UserFeed feedFromPost(Post post, UUID userId, Integer bucket) {
+        return new UserFeed(
+                new UserFeedKey(
+                        userId,
+                        bucket,
+                        post.getTimeStamp(),
+                        post.getKey().getPostId()
+                ),
+                post.getKey().getThemeId(),
+                post.getKey().getAuthorId(),
+                post.getPhoto(),
+                post.getText(),
+                post.getLikesCount(),
+                post.getCommentsCount()
+        );
+    }
+
+    public static UserFeed feedFromPostByAuthor(PostByAuthor post, UUID userId, Integer bucket) {
+        return new UserFeed(
+                new UserFeedKey(
+                        userId,
+                        bucket,
+                        post.getTimeStamp(),
+                        post.getKey().getPostId()
+                ),
+                post.getKey().getThemeId(),
+                post.getKey().getAuthorId(),
+                post.getPhoto(),
+                post.getText(),
+                post.getLikesCount(),
+                post.getCommentsCount()
         );
     }
 }
