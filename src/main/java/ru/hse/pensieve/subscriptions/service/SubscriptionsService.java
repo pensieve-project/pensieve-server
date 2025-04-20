@@ -8,6 +8,7 @@ import ru.hse.pensieve.subscriptions.models.SubscriptionRequest;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,6 +22,8 @@ public class SubscriptionsService {
 
     @Autowired
     private ProfileRepository profileRepository;
+
+    private final Integer vipBound = 10000;
 
     public List<UUID> getSubscriptions(UUID subscriberId) {
         return subscriptionsBySubscriberRepository.findByKeySubscriberId(subscriberId).stream().map(s -> s.getKey().getTargetId()).toList();
@@ -58,6 +61,8 @@ public class SubscriptionsService {
 
         profileRepository.save(subscriberProfile);
         profileRepository.save(targetProfile);
+
+        updateVipStatus(targetId);
     }
 
     public void unsubscribe(SubscriptionRequest request) {
@@ -79,11 +84,24 @@ public class SubscriptionsService {
 
         profileRepository.save(subscriberProfile);
         profileRepository.save(targetProfile);
+
+        updateVipStatus(targetId);
     }
 
     public Boolean hasUserSubscribed(SubscriptionRequest request) {
         UUID subscriberId = request.getSubscriberId();
         UUID targetId = request.getTargetId();
         return subscriptionsBySubscriberRepository.findById(new SubscriptionsBySubscriberKey(subscriberId, targetId)).isPresent();
+    }
+
+    private void updateVipStatus(UUID authorId) {
+        Optional<Profile> optionalProfile = profileRepository.findById(authorId);
+        if (optionalProfile.isEmpty()) {
+            return;
+        }
+        Profile profile = optionalProfile.get();
+        boolean isVip = profile.getSubscribersCount() > vipBound;
+        profile.setIsVip(isVip);
+        profileRepository.save(profile);
     }
 }

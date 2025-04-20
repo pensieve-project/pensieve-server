@@ -7,22 +7,23 @@ import lombok.Setter;
 import lombok.Getter;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.UUID;
 
 @AllArgsConstructor
 @Getter
 @Setter
-@Table("profiles")
-public class Profile {
+@Table("vip_posts")
+public class VipPost {
 
     @PrimaryKey
-    private UUID authorId;
-    private ByteBuffer avatar;
-    private String description;
-    private ArrayList<UUID> likedThemesIds;
-    private ArrayList<UUID> likedPostsIds;
-    private Integer subscriptionsCount;
-    private Integer subscribersCount;
-    private Boolean isVip;
+    private VipPostKey key;
+
+    private UUID themeId;
+    private ByteBuffer photo;
+    private String text;
+    // geo
+    // friends
+    private int likesCount;
+    private int commentsCount;
 }

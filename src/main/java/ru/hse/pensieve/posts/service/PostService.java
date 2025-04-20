@@ -33,15 +33,27 @@ public class PostService {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Autowired
+    private VipPostRepository vipPostRepository;
+
     public PostResponse savePost(PostRequest request) throws IOException {
         PostKey postKey = new PostKey(request.getThemeId(), request.getAuthorId(), UUID.randomUUID());
         byte[] photoBytes = (request.getPhoto() != null && !request.getPhoto().isEmpty()) ? request.getPhoto().getBytes() : null;
         if (photoBytes == null) {
             throw new IOException();
         }
-        Post post = new Post(postKey, ByteBuffer.wrap(photoBytes), request.getText(), Instant.now(), 0, 0);
-        Post newPost = postRepository.save(post);
-        return PostMapper.fromPost(newPost);
+        Post post = postRepository.save(new Post(postKey, ByteBuffer.wrap(photoBytes), request.getText(), Instant.now(), 0, 0));
+
+        boolean isVip = profileRepository.isVip(post.getKey().getAuthorId());
+
+        if (isVip) {
+            vipPostRepository.save(PostMapper.vipFromPost(post));
+            // redis
+        } else {
+            // kafka
+        }
+
+        return PostMapper.fromPost(post);
     }
 
     public List<PostResponse> getAllPosts() {
