@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hse.pensieve.database.cassandra.models.*;
 import ru.hse.pensieve.database.cassandra.repositories.*;
+import ru.hse.pensieve.database.redis.service.RedisService;
 import ru.hse.pensieve.feed.models.SubscriptionsFeedRequest;
 import ru.hse.pensieve.posts.models.*;
 
@@ -29,6 +30,9 @@ public class FeedService {
 
     @Autowired
     private ProfileRepository profileRepository;
+
+    @Autowired
+    private RedisService redisService;
 
     private List<UUID> findVipSubscriptions(UUID subscriberId) {
         List<SubscriptionsBySubscriber> subscriptions = subscriptionsBySubscriberRepository.findByKeySubscriberId(subscriberId);
@@ -68,8 +72,17 @@ public class FeedService {
         int perAuthorLimit = Math.max(1, limit / vipAuthors.size());
 
         return vipAuthors.parallelStream()
-                .flatMap(authorId -> vipPostRepository.findLatestByAuthor(authorId, lastSeen, perAuthorLimit).stream())
-                .map(PostMapper::postFromVip)
+                .flatMap(authorId -> {
+                    List<Post> cachedPosts = redisService.getLatestVipPosts(authorId, lastSeen, perAuthorLimit);
+
+                    if (cachedPosts.isEmpty()) {
+                        return vipPostRepository.findLatestByAuthor(authorId, lastSeen, perAuthorLimit)
+                                .stream()
+                                .map(PostMapper::postFromVip);
+                    }
+
+                    return cachedPosts.stream();
+                })
                 .collect(Collectors.toList());
     }
 }
