@@ -49,7 +49,7 @@ public class SubscriptionsController {
     }
 
     @GetMapping("/subscribed")
-    public ResponseEntity<Boolean> hasUserSubscribed(@RequestParam SubscriptionRequest request) {
-        return ResponseEntity.ok(subscriptionsService.hasUserSubscribed(request));
+    public ResponseEntity<Boolean> hasUserSubscribed(@RequestParam UUID subscriberId, @RequestParam UUID targetId) {
+        return ResponseEntity.ok(subscriptionsService.hasUserSubscribed(new SubscriptionRequest(subscriberId, targetId)));
     }
 }
