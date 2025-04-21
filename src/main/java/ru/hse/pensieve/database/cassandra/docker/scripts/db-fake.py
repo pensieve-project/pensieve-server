@@ -26,7 +26,23 @@ for theme in raw_themes:
 cluster = Cluster(['127.0.0.1'], port=9042)
 session = cluster.connect('pensieve')
 
+session.execute("""
+    CREATE TYPE IF NOT EXISTS point_type (
+        latitude double,
+        longitude double
+    )
+""")
+
+keyspace = cluster.metadata.keyspaces['pensieve']
+point_type = keyspace.user_types['point_type']
+
 fake = Faker()
+
+def generate_random_coords():
+    return {
+        'latitude': random.uniform(59.5, 60.0),
+        'longitude': random.uniform(30.0, 30.5)
+    }
 
 # PROFILES
 authors = [uuid4() for _ in range(50)]
@@ -61,13 +77,21 @@ for theme_id in themes:
     photo_blob = theme_map[theme_id]['photo']
     text = fake.paragraph(nb_sentences=3)
     timestamp = fake.date_time_between(start_date='-1y', end_date='now')
+    coords = generate_random_coords()
     likes = 0
     comments = 0
     posts.append((post_id, author_id, theme_id))
 
+    query = """
+        INSERT INTO posts
+            (themeId, authorId, postId, photo, text, timeStamp, location, likesCount, commentsCount)
+        VALUES (%s, %s, %s, %s, %s, %s, {latitude: %s, longitude: %s}, %s, %s)
+    """
+
     session.execute(
-        "INSERT INTO posts (themeId, authorId, postId, photo, text, timeStamp, likesCount, commentsCount) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-        (theme_id, author_id, post_id, photo_blob, text, timestamp, likes, comments)
+        query,
+        (theme_id, author_id, post_id, photo_blob, text, timestamp,
+         coords['latitude'], coords['longitude'], likes, comments)
     )
 
 # LIKES

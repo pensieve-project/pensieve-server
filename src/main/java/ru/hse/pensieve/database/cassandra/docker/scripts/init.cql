@@ -2,6 +2,11 @@ CREATE KEYSPACE IF NOT EXISTS pensieve WITH REPLICATION = {'class' : 'SimpleStra
 
 USE pensieve;
 
+CREATE TYPE IF NOT EXISTS point_type (
+    latitude double,
+    longitude double
+);
+
 CREATE TABLE IF NOT EXISTS posts (
     themeId UUID,
     authorId UUID,
@@ -9,6 +14,7 @@ CREATE TABLE IF NOT EXISTS posts (
     photo BLOB,
     text TEXT,
     timeStamp TIMESTAMP,
+    location frozen<point_type>,
     likesCount INT,
     commentsCount INT,
     PRIMARY KEY ((themeId), authorId, postId)

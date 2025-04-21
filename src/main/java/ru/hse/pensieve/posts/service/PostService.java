@@ -39,7 +39,7 @@ public class PostService {
         if (photoBytes == null) {
             throw new IOException();
         }
-        Post post = new Post(postKey, ByteBuffer.wrap(photoBytes), request.getText(), Instant.now(), 0, 0);
+        Post post = new Post(postKey, ByteBuffer.wrap(photoBytes), request.getText(), Instant.now(), request.getLocationPoint(), 0, 0);
         Post newPost = postRepository.save(post);
         return PostMapper.fromPost(newPost);
     }
@@ -80,6 +80,7 @@ public class PostService {
                 post.getPhoto(),
                 post.getText(),
                 post.getTimeStamp(),
+                post.getLocation(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         ));
@@ -114,6 +115,7 @@ public class PostService {
                 post.getPhoto(),
                 post.getText(),
                 post.getTimeStamp(),
+                post.getLocation(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         ));
@@ -157,6 +159,7 @@ public class PostService {
                 post.getPhoto(),
                 post.getText(),
                 post.getTimeStamp(),
+                post.getLocation(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         ));
