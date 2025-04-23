@@ -23,7 +23,7 @@ for theme in raw_themes:
             "photo": img_file.read()
         }
 
-cluster = Cluster(['127.0.0.1'], port=9042)
+cluster = Cluster(['188.187.122.19'], port=9042)
 session = cluster.connect('pensieve')
 
 fake = Faker()

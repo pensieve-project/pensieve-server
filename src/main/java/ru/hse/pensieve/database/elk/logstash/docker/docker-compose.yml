@@ -11,7 +11,7 @@ services:
       - ELASTIC_USER=${ELASTIC_USER}
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     ports:
-      - "5044:5044"
+      - "${LOGSTASH_PORT}:${LOGSTASH_PORT}"
     networks:
       - cassandra-elk-network
 
