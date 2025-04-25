@@ -44,11 +44,16 @@ public class PostService {
     @Autowired
     private RedisService redisService;
 
-    public PostResponse savePost(PostRequest request) throws IOException {
+    public PostResponse savePost(PostRequest request) throws BadPostException {
         PostKey postKey = new PostKey(request.getThemeId(), request.getAuthorId(), UUID.randomUUID());
-        byte[] photoBytes = (request.getPhoto() != null && !request.getPhoto().isEmpty()) ? request.getPhoto().getBytes() : null;
-        if (photoBytes == null) {
-            throw new IOException();
+        byte[] photoBytes;
+        if (request.getPhoto() == null || request.getPhoto().isEmpty()) {
+            throw new BadPostException("Post photo is null!");
+        }
+        try {
+            photoBytes = request.getPhoto().getBytes();
+        } catch (IOException ex) {
+            throw new BadPostException("Post photo is null!");
         }
         Post post = postRepository.save(new Post(postKey, ByteBuffer.wrap(photoBytes), request.getText(), Instant.now(), 0, 0));
 

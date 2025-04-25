@@ -1,4 +1,4 @@
-package ru.hse.pensieve.authentication.config;
+package ru.hse.pensieve.config.security;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

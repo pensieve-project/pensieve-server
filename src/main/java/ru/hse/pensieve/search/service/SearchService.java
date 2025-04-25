@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hse.pensieve.database.elk.elasticsearch.models.EsThemeDocument;
 import ru.hse.pensieve.database.elk.elasticsearch.models.EsUserDocument;
+import ru.hse.pensieve.search.models.EsNotFoundException;
 import ru.hse.pensieve.search.models.UserMapper;
 import ru.hse.pensieve.search.models.UserResponse;
 import ru.hse.pensieve.themes.models.ThemeMapper;
@@ -26,7 +27,7 @@ public class SearchService {
     @Autowired
     private ElasticsearchClient client;
 
-    public List<UserResponse> searchUsers(String prefix) throws IOException {
+    public List<UserResponse> searchUsers(String prefix) throws EsNotFoundException {
 
         SearchRequest request = SearchRequest.of(s -> s
             .index("users_index")
@@ -41,36 +42,46 @@ public class SearchService {
             )
         );
 
-        SearchResponse<EsUserDocument> response = client.search(request, EsUserDocument.class);
+        try {
+            SearchResponse<EsUserDocument> response = client.search(request, EsUserDocument.class);
 
-        return response.suggest()
-                .get("username-suggest")
-                .getFirst()
-                .completion()
-                .options()
-                .stream()
-                .map(CompletionSuggestOption::source)
-                .filter(Objects::nonNull)
-                .map(UserMapper::fromEs)
-                .collect(Collectors.toList());
+            return response.suggest()
+                    .get("username-suggest")
+                    .getFirst()
+                    .completion()
+                    .options()
+                    .stream()
+                    .map(CompletionSuggestOption::source)
+                    .filter(Objects::nonNull)
+                    .map(UserMapper::fromEs)
+                    .collect(Collectors.toList());
+
+        } catch (IOException ex) {
+            throw new EsNotFoundException("ElasticsearchClient cannot search users with prefix: " + prefix);
+        }
     }
 
-    public List<ThemeResponse> searchThemes(String query) throws IOException {
-        SearchResponse<EsThemeDocument> response = client.search(s -> s
-                        .index("themes_index")
-                        .query(q -> q
-                                .match(m -> m
-                                        .field("title")
-                                        .query(query)
-                                )
-                        ),
-                EsThemeDocument.class
-        );
+    public List<ThemeResponse> searchThemes(String query) throws EsNotFoundException {
+        try {
+            SearchResponse<EsThemeDocument> response = client.search(s -> s
+                            .index("themes_index")
+                            .query(q -> q
+                                    .match(m -> m
+                                            .field("title")
+                                            .query(query)
+                                    )
+                            ),
+                    EsThemeDocument.class
+            );
 
-        return response.hits().hits().stream()
-                .map(Hit::source)
-                .filter(Objects::nonNull)
-                .map(ThemeMapper::fromEsTheme)
-                .toList();
+            return response.hits().hits().stream()
+                    .map(Hit::source)
+                    .filter(Objects::nonNull)
+                    .map(ThemeMapper::fromEsTheme)
+                    .toList();
+
+        } catch (IOException ex) {
+            throw new EsNotFoundException("ElasticsearchClient cannot search themes with query: " + query);
+        }
     }
 }

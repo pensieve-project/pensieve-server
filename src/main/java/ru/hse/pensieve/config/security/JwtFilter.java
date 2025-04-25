@@ -1,4 +1,4 @@
-package ru.hse.pensieve.authentication.config;
+package ru.hse.pensieve.config.security;
 
 import ru.hse.pensieve.authentication.service.JwtService;
 import ru.hse.pensieve.authentication.models.JwtAuthentication;
