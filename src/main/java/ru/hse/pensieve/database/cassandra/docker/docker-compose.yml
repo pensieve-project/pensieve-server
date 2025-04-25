@@ -7,10 +7,10 @@ services:
     environment:
       - CASSANDRA_CLUSTER_NAME=MyCluster
     networks:
-      - cassandra-elk-network
+      - pensieve-network
     volumes:
       - ./scripts:/scripts
 
 networks:
-  cassandra-elk-network:
-    name: cassandra-elk-network
+  pensieve-network:
+    name: pensieve-network

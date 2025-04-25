@@ -17,8 +17,8 @@ services:
       - "${ELASTIC_PORT_1}:${ELASTIC_PORT_1}"
       - "${ELASTIC_PORT_2}:${ELASTIC_PORT_2}"
     networks:
-      - cassandra-elk-network
+      - pensieve-network
 
 networks:
-  cassandra-elk-network:
-    name: cassandra-elk-network
+  pensieve-network:
+    name: pensieve-network

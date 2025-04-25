@@ -5,25 +5,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.*;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Document(indexName = "themes_index")
-public class EsThemeDocument {
-    @JsonProperty("themeid")
-    private UUID themeId;
+@Document(indexName = "users_index")
+public class EsUserDocument {
+    @Id
+    @JsonProperty("id")
+    private UUID userId;
 
-    @JsonProperty("authorid")
-    private UUID authorId;
-
-    private String title;
-
-    @JsonProperty("timestamp")
-    private Instant timeStamp;
+    private String username;
 }
