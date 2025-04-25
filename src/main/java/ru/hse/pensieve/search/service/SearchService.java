@@ -5,11 +5,15 @@ import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.CompletionSuggestOption;
 import co.elastic.clients.elasticsearch.core.search.CompletionSuggester;
+import co.elastic.clients.elasticsearch.core.search.Hit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.hse.pensieve.database.elk.elasticsearch.models.EsThemeDocument;
 import ru.hse.pensieve.database.elk.elasticsearch.models.EsUserDocument;
 import ru.hse.pensieve.search.models.UserMapper;
 import ru.hse.pensieve.search.models.UserResponse;
+import ru.hse.pensieve.themes.models.ThemeMapper;
+import ru.hse.pensieve.themes.models.ThemeResponse;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,6 +35,7 @@ public class SearchService {
                     .text(prefix)
                     .completion(CompletionSuggester.of(c -> c
                         .field("suggest")
+                        .size(100)
                     ))
                 )
             )
@@ -48,5 +53,24 @@ public class SearchService {
                 .filter(Objects::nonNull)
                 .map(UserMapper::fromEs)
                 .collect(Collectors.toList());
+    }
+
+    public List<ThemeResponse> searchThemes(String query) throws IOException {
+        SearchResponse<EsThemeDocument> response = client.search(s -> s
+                        .index("themes_index")
+                        .query(q -> q
+                                .match(m -> m
+                                        .field("title")
+                                        .query(query)
+                                )
+                        ),
+                EsThemeDocument.class
+        );
+
+        return response.hits().hits().stream()
+                .map(Hit::source)
+                .filter(Objects::nonNull)
+                .map(ThemeMapper::fromEsTheme)
+                .toList();
     }
 }

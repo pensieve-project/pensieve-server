@@ -30,15 +30,6 @@ public class ThemeController {
         List<ThemeResponse> themes = themeService.getAllThemes();
         return ResponseEntity.ok(themes);
     }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<ThemeResponse>> searchThemes(@RequestParam("query") String query) {
-        try {
-            return ResponseEntity.ok(themeService.searchThemes(query));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
   
     @GetMapping("/title")
     public ResponseEntity<String> getThemeTitle(@RequestParam UUID themeId) {

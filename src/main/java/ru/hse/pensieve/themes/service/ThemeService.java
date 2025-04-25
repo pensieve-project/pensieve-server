@@ -54,25 +54,6 @@ public class ThemeService {
         }
         return theme.get().getTitle();
     }
-  
-    public List<ThemeResponse> searchThemes(String query) throws IOException {
-        SearchResponse<EsThemeDocument> response = esClient.search(s -> s
-                        .index("themes_index")
-                        .query(q -> q
-                                .match(m -> m
-                                        .field("title")
-                                        .query(query)
-                                )
-                        ),
-                EsThemeDocument.class
-        );
-
-        return response.hits().hits().stream()
-                .map(Hit::source)
-                .filter(Objects::nonNull)
-                .map(ThemeMapper::fromEsTheme)
-                .toList();
-    }
 
     public Boolean hasUserLikedTheme(LikeRequest request) {
         return profileRepository.hasLikedTheme(request.getAuthorId(), request.getThemeId());
