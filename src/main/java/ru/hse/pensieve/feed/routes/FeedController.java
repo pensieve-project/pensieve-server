@@ -7,7 +7,9 @@ import ru.hse.pensieve.feed.models.SubscriptionsFeedRequest;
 import ru.hse.pensieve.feed.service.FeedService;
 import ru.hse.pensieve.posts.models.*;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/feed")
@@ -17,7 +19,7 @@ public class FeedController {
     private FeedService feedService;
 
     @GetMapping("/subscriptions")
-    public ResponseEntity<List<PostResponse>> getSubscriptionsFeed(@RequestBody SubscriptionsFeedRequest request) {
-        return ResponseEntity.ok(feedService.getSubscriptionsFeed(request));
+    public ResponseEntity<List<PostResponse>> getSubscriptionsFeed(@RequestParam UUID userId, @RequestParam Integer limit, @RequestParam Instant lastSeenTime) {
+        return ResponseEntity.ok(feedService.getSubscriptionsFeed(userId, limit, lastSeenTime));
     }
 }

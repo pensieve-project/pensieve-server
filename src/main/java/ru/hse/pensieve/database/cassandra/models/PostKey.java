@@ -12,18 +12,18 @@ import lombok.Setter;
 import lombok.Getter;
 
 @AllArgsConstructor
-@NoArgsConstructor(force = true)
+@NoArgsConstructor
 @Getter
 @Setter
 @PrimaryKeyClass
 public class PostKey implements Serializable {
 
     @PrimaryKeyColumn(type = PrimaryKeyType.PARTITIONED)
-    private final UUID themeId;
+    private UUID themeId;
 
     @PrimaryKeyColumn(type = PrimaryKeyType.CLUSTERED)
-    private final UUID authorId;
+    private UUID authorId;
 
     @PrimaryKeyColumn(type = PrimaryKeyType.CLUSTERED)
-    private final UUID postId;
+    private UUID postId;
 }

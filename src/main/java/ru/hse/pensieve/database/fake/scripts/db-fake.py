@@ -6,6 +6,8 @@ import random
 from datetime import datetime
 import os
 import json
+import psycopg2
+from psycopg2.extras import register_uuid
 
 PHOTO_DIR = './images'
 THEMES_JSON_PATH = './themes.json'
@@ -23,13 +25,41 @@ for theme in raw_themes:
             "photo": img_file.read()
         }
 
-cluster = Cluster(['188.187.122.19'], port=9042)
+# POSTGRES CONNECTION
+conn = psycopg2.connect(
+    dbname='pensieveDatabase',
+    user='postgres',
+    password='postgres',
+    host='localhost'
+)
+cursor = conn.cursor()
+register_uuid()
+
+# CASSANDRA CONNECTION
+cluster = Cluster(['127.0.0.1'], port=9042)
 session = cluster.connect('pensieve')
 
 fake = Faker()
 
+admin_id = UUID("b8855fe9-feb8-41a6-a367-47f576e340af")
+authors = [admin_id] + [uuid4() for _ in range(50)]
+# USERS
+for author_id in authors[1:]:
+    username = fake.user_name()
+    email = fake.email()
+    password_hash = fake.sha256()
+    salt = fake.bothify(text='????????##??')
+
+    cursor.execute(
+        """INSERT INTO users (id, username, email, password_hash, salt)
+           VALUES (%s, %s, %s, %s, %s)""",
+        (author_id, username, email, password_hash, salt)
+    )
+conn.commit()
+cursor.close()
+conn.close()
+
 # PROFILES
-authors = [uuid4() for _ in range(50)]
 for author_id in authors:
     description = fake.text(max_nb_chars=150)
     liked_themes_ids = []
@@ -56,19 +86,20 @@ for theme_id, data in theme_map.items():
 # POSTS
 posts = []
 for theme_id in themes:
-    author_id = random.choice(authors)
-    post_id = uuid4()
-    photo_blob = theme_map[theme_id]['photo']
-    text = fake.paragraph(nb_sentences=3)
-    timestamp = fake.date_time_between(start_date='-1y', end_date='now')
-    likes = 0
-    comments = 0
-    posts.append((post_id, author_id, theme_id))
+    for _ in range(3):
+        author_id = random.choice(authors)
+        post_id = uuid4()
+        photo_blob = theme_map[theme_id]['photo']
+        text = fake.paragraph(nb_sentences=3)
+        timestamp = fake.date_time_between(start_date='-1y', end_date='now')
+        likes = 0
+        comments = 0
+        posts.append((post_id, author_id, theme_id))
 
-    session.execute(
-        "INSERT INTO posts (themeId, authorId, postId, photo, text, timeStamp, likesCount, commentsCount) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-        (theme_id, author_id, post_id, photo_blob, text, timestamp, likes, comments)
-    )
+        session.execute(
+            "INSERT INTO posts (themeId, authorId, postId, photo, text, timeStamp, likesCount, commentsCount) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+            (theme_id, author_id, post_id, photo_blob, text, timestamp, likes, comments)
+        )
 
 # LIKES
 for _ in range(100):

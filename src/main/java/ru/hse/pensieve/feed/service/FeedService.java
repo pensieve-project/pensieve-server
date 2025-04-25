@@ -2,6 +2,7 @@ package ru.hse.pensieve.feed.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.hse.pensieve.database.cassandra.models.*;
 import ru.hse.pensieve.database.cassandra.repositories.*;
 import ru.hse.pensieve.database.redis.service.RedisService;
@@ -43,21 +44,22 @@ public class FeedService {
                 .collect(Collectors.toList());
     }
 
-    public List<PostResponse> getSubscriptionsFeed(SubscriptionsFeedRequest request) {
-        UUID userId = request.getUserId();
-        int limit = request.getLimit();
-        Instant lastSeen = request.getLastSeenTime() != null ? request.getLastSeenTime() : Instant.now();
+    public List<PostResponse> getSubscriptionsFeed(UUID userId, Integer limit, Instant lastSeenTime) {
+        Instant lastSeen = lastSeenTime != null ? lastSeenTime : Instant.now();
 
         List<Post> regularPosts = getRegularPosts(userId, limit, lastSeen);
 
-        List<UUID> vipAuthors = findVipSubscriptions(request.getUserId());
+        List<UUID> vipAuthors = findVipSubscriptions(userId);
         List<Post> vipPosts = getVipPosts(vipAuthors, limit, lastSeen);
 
-        return Stream.concat(regularPosts.stream(), vipPosts.stream())
+        List<PostResponse> result = Stream.concat(regularPosts.stream(), vipPosts.stream())
                 .sorted(Comparator.comparing(Post::getTimeStamp).reversed())
                 .limit(limit)
                 .map(PostMapper::fromPost)
                 .collect(Collectors.toList());
+
+        System.out.println("Sent " + result.size() + " posts in feed");
+        return result;
     }
 
     private List<Post> getRegularPosts(UUID userId, int limit, Instant lastSeen) {
