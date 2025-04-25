@@ -13,15 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.testcontainers.containers.CassandraContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.shaded.org.apache.commons.lang3.tuple.Pair;
 import ru.hse.pensieve.authentication.models.RegisterRequest;
 import ru.hse.pensieve.authentication.service.AuthenticationService;
 import ru.hse.pensieve.feed.service.FeedService;
@@ -34,7 +28,6 @@ import ru.hse.pensieve.subscriptions.models.SubscriptionRequest;
 import ru.hse.pensieve.subscriptions.service.SubscriptionsService;
 import ru.hse.pensieve.themes.models.ThemeRequest;
 import ru.hse.pensieve.themes.service.ThemeService;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.IOException;
@@ -47,7 +40,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 @SpringBootTest
-//@Disabled
+@Disabled
 @ActiveProfiles("test")
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 public class TestDataInitializer {
