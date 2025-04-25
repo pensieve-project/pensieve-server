@@ -14,8 +14,8 @@ services:
       - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certs/instance.crt
       - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certs/ca.crt
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - "${ELASTIC_PORT_1}:${ELASTIC_PORT_1}"
+      - "${ELASTIC_PORT_2}:${ELASTIC_PORT_2}"
     networks:
       - cassandra-elk-network
 

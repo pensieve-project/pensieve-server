@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hse.pensieve.database.cassandra.models.*;
 import ru.hse.pensieve.database.cassandra.repositories.*;
+import ru.hse.pensieve.database.redis.service.RedisService;
+import ru.hse.pensieve.posts.kafka.PostEventProducer;
 import ru.hse.pensieve.posts.models.*;
 
 import java.io.IOException;
@@ -33,15 +35,33 @@ public class PostService {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Autowired
+    private VipPostRepository vipPostRepository;
+
+    @Autowired
+    private PostEventProducer postEventProducer;
+
+    @Autowired
+    private RedisService redisService;
+
     public PostResponse savePost(PostRequest request) throws IOException {
         PostKey postKey = new PostKey(request.getThemeId(), request.getAuthorId(), UUID.randomUUID());
         byte[] photoBytes = (request.getPhoto() != null && !request.getPhoto().isEmpty()) ? request.getPhoto().getBytes() : null;
         if (photoBytes == null) {
             throw new IOException();
         }
-        Post post = new Post(postKey, ByteBuffer.wrap(photoBytes), request.getText(), Instant.now(), 0, 0);
-        Post newPost = postRepository.save(post);
-        return PostMapper.fromPost(newPost);
+        Post post = postRepository.save(new Post(postKey, ByteBuffer.wrap(photoBytes), request.getText(), Instant.now(), 0, 0));
+
+        boolean isVip = profileRepository.isVip(post.getKey().getAuthorId());
+
+        if (isVip) {
+            vipPostRepository.save(PostMapper.vipFromPost(post));
+            redisService.cacheVipPost(post);
+        } else {
+            postEventProducer.sendPostCreated(post);
+        }
+
+        return PostMapper.fromPost(post);
     }
 
     public List<PostResponse> getAllPosts() {
