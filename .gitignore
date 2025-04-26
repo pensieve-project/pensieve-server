@@ -8,6 +8,9 @@ src/test/resources/application-test.properties
 src/main/resources/certs
 **/*.env
 
+### Logstash Drivers
+src/main/java/ru/hse/pensieve/database/elk/logstash/docker/drivers/**/*.jar
+
 *.crt
 *.key
 src/main/java/ru/hse/pensieve/database/elk/certs/

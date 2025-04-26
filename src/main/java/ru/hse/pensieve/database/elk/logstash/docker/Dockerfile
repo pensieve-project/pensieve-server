@@ -3,8 +3,8 @@ FROM logstash:8.13.0
 RUN logstash-plugin install logstash-integration-jdbc
 
 RUN mkdir -p /usr/share/logstash/drivers/
-COPY cassandra_driver/. /usr/share/logstash/drivers/
-COPY postgres_driver/. /usr/share/logstash/drivers/
+COPY drivers/cassandra_driver/. /usr/share/logstash/drivers/
+COPY drivers/postgres_driver/. /usr/share/logstash/drivers/
 
 COPY ./logstash.conf /usr/share/logstash/pipeline/logstash.conf
 
