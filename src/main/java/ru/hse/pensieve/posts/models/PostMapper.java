@@ -122,4 +122,19 @@ public class PostMapper {
                 post.getCommentsCount()
         );
     }
+
+    public static Post postFromPostById(PostById post) {
+        return new Post(
+                new PostKey(
+                        post.getKey().getThemeId(),
+                        post.getKey().getAuthorId(),
+                        post.getKey().getPostId()
+                ),
+                post.getPhoto(),
+                post.getText(),
+                post.getTimeStamp(),
+                post.getLikesCount(),
+                post.getCommentsCount()
+        );
+    }
 }

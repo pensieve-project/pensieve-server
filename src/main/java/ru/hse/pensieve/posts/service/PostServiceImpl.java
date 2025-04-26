@@ -96,18 +96,7 @@ public class PostServiceImpl implements PostService {
 
         PostById post = posts.getFirst();
         post.setLikesCount(post.getLikesCount() + 1);
-        postRepository.save(new Post(
-                new PostKey(
-                        post.getKey().getThemeId(),
-                        post.getKey().getAuthorId(),
-                        post.getKey().getPostId()
-                ),
-                post.getPhoto(),
-                post.getText(),
-                post.getTimeStamp(),
-                post.getLikesCount(),
-                post.getCommentsCount()
-        ));
+        postRepository.save(PostMapper.postFromPostById(post));
 
         Profile profile = profileRepository.findByAuthorId(request.getAuthorId());
         ArrayList<UUID> likes = profile.getLikedPostsIds();
@@ -130,18 +119,7 @@ public class PostServiceImpl implements PostService {
 
         PostById post = posts.getFirst();
         post.setLikesCount(post.getLikesCount() - 1);
-        postRepository.save(new Post(
-                new PostKey(
-                        post.getKey().getThemeId(),
-                        post.getKey().getAuthorId(),
-                        post.getKey().getPostId()
-                ),
-                post.getPhoto(),
-                post.getText(),
-                post.getTimeStamp(),
-                post.getLikesCount(),
-                post.getCommentsCount()
-        ));
+        postRepository.save(PostMapper.postFromPostById(post));
 
         Profile profile = profileRepository.findByAuthorId(request.getAuthorId());
         ArrayList<UUID> likes = profile.getLikedPostsIds();
@@ -168,23 +146,12 @@ public class PostServiceImpl implements PostService {
         Comment newComment = commentRepository.save(comment);
         List<PostById> posts = postByIdRepository.findByKeyPostId(newComment.getKey().getPostId());
         if (posts.isEmpty()) {
-            throw new RuntimeException(); // handle!!
+            throw new PostNotFoundException("Post for comment not found");
         }
 
         PostById post = posts.getFirst();
         post.setCommentsCount(post.getCommentsCount() + 1);
-        postRepository.save(new Post(
-                new PostKey(
-                        post.getKey().getThemeId(),
-                        post.getKey().getAuthorId(),
-                        post.getKey().getPostId()
-                ),
-                post.getPhoto(),
-                post.getText(),
-                post.getTimeStamp(),
-                post.getLikesCount(),
-                post.getCommentsCount()
-        ));
+        postRepository.save(PostMapper.postFromPostById(post));
         return CommentMapper.fromComment(newComment);
     }
 

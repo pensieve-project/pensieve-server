@@ -99,4 +99,15 @@ public class PostController {
         );
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(PostNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePostNotFoundException(Exception ex) {
+        log.error("Post does not exist: ", ex);
+
+        ErrorResponse error = new ErrorResponse(
+                "Post does not exist: " + ex.getMessage(),
+                HttpStatus.BAD_REQUEST.value()
+        );
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 }
