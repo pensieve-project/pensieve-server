@@ -55,10 +55,10 @@ public class PostController {
     @PostMapping("/like")
     public ResponseEntity<?> likePost(@RequestBody LikeRequest request) {
         postService.likePost(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(201).build();
     }
 
-    @PostMapping("/unlike")
+    @DeleteMapping("/unlike")
     public ResponseEntity<?> unlikePost(@RequestBody LikeRequest request) {
         postService.unlikePost(request);
         return ResponseEntity.ok().build();
@@ -76,7 +76,7 @@ public class PostController {
 
     @PostMapping("/comment")
     public ResponseEntity<CommentResponse> leaveComment(@RequestBody CommentRequest request) {
-        return ResponseEntity.ok(postService.leaveComment(request));
+        return ResponseEntity.status(201).body(postService.leaveComment(request));
     }
 
     @GetMapping("/comments")

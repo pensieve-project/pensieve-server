@@ -39,10 +39,10 @@ public class SubscriptionsController {
     @PostMapping("/subscribe")
     public ResponseEntity<?> subscribe(@RequestBody SubscriptionRequest request) {
         subscriptionsService.subscribe(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(201).build();
     }
 
-    @PostMapping("/unsubscribe")
+    @DeleteMapping("/unsubscribe")
     public ResponseEntity<?> unsubscribe(@RequestBody SubscriptionRequest request) {
         subscriptionsService.unsubscribe(request);
         return ResponseEntity.ok().build();

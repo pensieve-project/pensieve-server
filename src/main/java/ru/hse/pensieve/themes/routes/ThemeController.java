@@ -22,7 +22,7 @@ public class ThemeController {
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest request) {
         ThemeResponse response = themeService.createTheme(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(201).body(response);
     }
 
     @GetMapping
@@ -39,10 +39,10 @@ public class ThemeController {
     @PostMapping("/like")
     public ResponseEntity<?> likeTheme(@RequestBody LikeRequest request) {
         themeService.likeTheme(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(201).build();
     }
 
-    @PostMapping("/unlike")
+    @DeleteMapping("/unlike")
     public ResponseEntity<?> unlikeTheme(@RequestBody LikeRequest request) {
         themeService.unlikeTheme(request);
         return ResponseEntity.ok().build();
