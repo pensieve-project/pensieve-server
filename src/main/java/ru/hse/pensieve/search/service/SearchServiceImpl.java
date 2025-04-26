@@ -69,6 +69,7 @@ public class SearchServiceImpl implements SearchService {
                                     .match(m -> m
                                             .field("title")
                                             .query(query)
+                                            .fuzziness("AUTO")
                                     )
                             ),
                     EsThemeDocument.class
