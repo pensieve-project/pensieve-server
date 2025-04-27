@@ -3,14 +3,14 @@ services:
     build: .
     container_name: cassandra
     ports:
-      - "9042:9042"
+      - "${CASSANDRA_PORT}:${CASSANDRA_PORT}"
     environment:
       - CASSANDRA_CLUSTER_NAME=MyCluster
     networks:
-      - cassandra-elk-network
+      - pensieve-network
     volumes:
       - ./scripts:/scripts
 
 networks:
-  cassandra-elk-network:
-    name: cassandra-elk-network
+  pensieve-network:
+    name: pensieve-network

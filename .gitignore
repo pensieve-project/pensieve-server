@@ -3,9 +3,15 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-src/main/resources/application.properties
-src/main/resources/certs
+src/main/resources/*
+src/test/resources/*
 **/*.env
+
+### Logstash Drivers
+src/main/java/ru/hse/pensieve/database/elk/logstash/docker/drivers/**/*.jar
+
+### ElasticSearch db
+src/main/java/ru/hse/pensieve/database/elk/elasticsearch/docker/synonyms_en.txt
 
 *.crt
 *.key

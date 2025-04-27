@@ -10,11 +10,13 @@ services:
       - CASSANDRA_PASSWORD=${CASSANDRA_PASSWORD}
       - ELASTIC_USER=${ELASTIC_USER}
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
-      - "5044:5044"
+      - "${LOGSTASH_PORT}:${LOGSTASH_PORT}"
     networks:
-      - cassandra-elk-network
+      - pensieve-network
 
 networks:
-  cassandra-elk-network:
-    name: cassandra-elk-network
+  pensieve-network:
+    name: pensieve-network

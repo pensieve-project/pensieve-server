@@ -51,7 +51,7 @@ public class ThemeControllerTest {
         mockMvc.perform(post("/themes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.authorId", is(authorId.toString())))
                 .andExpect(jsonPath("$.title", is("Some title")));
     }

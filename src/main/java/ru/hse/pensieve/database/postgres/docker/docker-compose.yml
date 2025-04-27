@@ -9,11 +9,11 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: pensieveDatabase
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:5432"
     volumes:
       - ./init-scripts:/init-scripts
     networks:
-      - postgresql-network
+      - pensieve-network
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres_user -d postgres_db" ]
       interval: 30s
@@ -27,5 +27,5 @@ volumes:
     driver: local
 
 networks:
-  postgresql-network:
-    driver: bridge
+  pensieve-network:
+    name: pensieve-network

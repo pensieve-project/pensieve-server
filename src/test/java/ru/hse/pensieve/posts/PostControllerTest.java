@@ -137,14 +137,14 @@ public class PostControllerTest {
         mockMvc.perform(post("/posts/like")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @Test
     public void testUnlikePost() throws Exception {
         LikeRequest request = new LikeRequest(UUID.randomUUID(), UUID.randomUUID());
 
-        mockMvc.perform(post("/posts/unlike")
+        mockMvc.perform(delete("/posts/unlike")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
@@ -189,7 +189,7 @@ public class PostControllerTest {
         mockMvc.perform(post("/posts/comment")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.postId", is(postId.toString())))
                 .andExpect(jsonPath("$.authorId", is(authorId.toString())))
                 .andExpect(jsonPath("$.text", is(text)));
