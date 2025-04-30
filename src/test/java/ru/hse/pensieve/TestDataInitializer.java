@@ -38,6 +38,7 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.stream.Stream;
 
 @SpringBootTest
 @Disabled
@@ -73,6 +74,8 @@ public class TestDataInitializer {
 
     @BeforeEach
     void setup() throws IOException {
+        loadAllImages();
+
         adminId = authenticationService
                 .register(new RegisterRequest("admin", "admin@admin.com", hashWithSha256("admin123")))
                 .join()
@@ -80,8 +83,9 @@ public class TestDataInitializer {
         authors.add(adminId);
 
         for (int i = 0; i < 30; i++) {
+            String username = generateUniqueUsername(i);
             UUID userId = authenticationService
-                    .register(new RegisterRequest("user" + i, "user" + i + "@test.com", hashWithSha256("password" + i)))
+                    .register(new RegisterRequest(username, "user" + i + "@test.com", hashWithSha256("password" + i)))
                     .join()
                     .getId();
             authors.add(userId);
@@ -89,16 +93,16 @@ public class TestDataInitializer {
 
         // profiles
         for (UUID userId : authors) {
-            byte[] image = loadImage("cat.jpg");
-            MultipartFile imageFile = toMultipartFile("cat.jpg", image);
-            profileService.createProfile(new ProfileRequest(userId, imageFile, "description"));
+            String randomImage = getRandomImage();
+            MultipartFile imageFile = toMultipartFile(randomImage, imageCache.get(randomImage));
+            profileService.createProfile(new ProfileRequest(userId, imageFile, "Some profile description"));
         }
 
         // themes
         themes = createThemes();
 
         // posts
-        posts = createPosts(themes);
+        posts = createPosts();
 
         // subscriptions
         createSocialInteractions();
@@ -120,7 +124,7 @@ public class TestDataInitializer {
         return themeIds;
     }
 
-    private List<PostResponse> createPosts(List<UUID> themes) throws IOException {
+    private List<PostResponse> createPosts() throws IOException {
         List<PostResponse> posts = new ArrayList<>();
         for (UUID themeId : themes) {
             for (int i = 0; i < 3; i++) {
@@ -183,6 +187,53 @@ public class TestDataInitializer {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("SHA-256 algorithm not found", e);
         }
+    }
+
+    private static final String[] ADJECTIVES = {
+            "Crazy", "Epic", "Cosmic", "Digital", "Phantom",
+            "Neon", "Quantum", "Silent", "Mystic", "Golden",
+            "Flying", "Infernal", "Solar", "Atomic", "Virtual"
+    };
+    private static final String[] NOUNS = {
+            "Ninja", "Phoenix", "Wizard", "Samurai", "Dragon",
+            "Penguin", "Warrior", "Spy", "Robot", "Pioneer",
+            "Voyager", "Glitch", "Overlord", "Nomad", "Jester"
+    };
+
+    private String generateUniqueUsername(int index) {
+        String adj = ADJECTIVES[random.nextInt(ADJECTIVES.length)];
+        String noun = NOUNS[random.nextInt(NOUNS.length)];
+        return String.format("%s%s%03d",
+                adj.toLowerCase(),
+                noun.toLowerCase(),
+                index + 100
+        );
+    }
+
+    private Map<String, byte[]> imageCache = new LinkedHashMap<>();
+
+    private void loadAllImages() throws IOException {
+        Path imagesDir = Paths.get("src/test/resources/images/");
+        try (Stream<Path> paths = Files.list(imagesDir)) {
+            paths.filter(Files::isRegularFile)
+                    .forEach(p -> {
+                        try {
+                            String filename = p.getFileName().toString();
+                            imageCache.put(filename, Files.readAllBytes(p));
+                        } catch (IOException e) {
+                            throw new RuntimeException("Error loading image: " + p, e);
+                        }
+                    });
+
+            if (imageCache.isEmpty()) {
+                throw new IllegalStateException("No images found in images directory");
+            }
+        }
+    }
+
+    private String getRandomImage() {
+        List<String> keys = new ArrayList<>(imageCache.keySet());
+        return keys.get(random.nextInt(keys.size()));
     }
 
     @Test
