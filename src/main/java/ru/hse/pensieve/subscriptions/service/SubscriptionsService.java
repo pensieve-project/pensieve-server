@@ -1,5 +1,6 @@
 package ru.hse.pensieve.subscriptions.service;
 
+import ru.hse.pensieve.database.cassandra.models.Profile;
 import ru.hse.pensieve.subscriptions.models.SubscriptionRequest;
 
 import java.util.List;
@@ -21,5 +22,5 @@ public interface SubscriptionsService {
 
     Boolean hasUserSubscribed(SubscriptionRequest request);
 
-    Boolean updateVipStatus(UUID authorId);
+    Boolean updateVipStatus(Profile profile);
 }

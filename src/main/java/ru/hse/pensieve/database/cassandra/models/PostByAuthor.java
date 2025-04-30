@@ -21,7 +21,6 @@ public class PostByAuthor {
 
     private ByteBuffer photo;
     private String text;
-    private Instant timeStamp;
     // geo
     // friends
     private int likesCount;

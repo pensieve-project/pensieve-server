@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hse.pensieve.database.cassandra.models.*;
 import ru.hse.pensieve.database.cassandra.repositories.*;
+import ru.hse.pensieve.feed.service.FeedService;
+import ru.hse.pensieve.posts.models.PostMapper;
 import ru.hse.pensieve.subscriptions.kafka.SubscriptionEventProducer;
 import ru.hse.pensieve.subscriptions.models.SubscriptionRequest;
 
@@ -26,6 +28,9 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
 
     @Autowired
     private SubscriptionEventProducer subscriptionEventProducer;
+
+    @Autowired
+    private FeedService feedService;
 
     private final Integer vipBound = 10000;
 
@@ -53,22 +58,28 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
             return;
         }
 
-        Instant timeStamp = Instant.now();
-        subscriptionsBySubscriberRepository.save(new SubscriptionsBySubscriber(new SubscriptionsBySubscriberKey(subscriberId, targetId), timeStamp));
-        subscribersByTargetRepository.save(new SubscribersByTarget(new SubscribersByTargetKey(targetId, subscriberId), timeStamp));
-
         Profile subscriberProfile = profileRepository.findByAuthorId(subscriberId);
         Profile targetProfile = profileRepository.findByAuthorId(targetId);
 
         subscriberProfile.setSubscriptionsCount(subscriberProfile.getSubscriptionsCount() + 1);
         targetProfile.setSubscribersCount(targetProfile.getSubscribersCount() + 1);
 
+        Boolean wasVip = targetProfile.getIsVip();
+        Boolean becomeVip = updateVipStatus(targetProfile);
+
+        if (!becomeVip) {
+            subscriptionEventProducer.sendSubscribed(request);
+        } else if (!wasVip) {
+            subscriptionEventProducer.sendBecameVip(targetId);
+            feedService.cacheVipPosts(targetId);
+        }
+
         profileRepository.save(subscriberProfile);
         profileRepository.save(targetProfile);
 
-        if (!updateVipStatus(targetId)) {
-            subscriptionEventProducer.sendSubscribed(request);
-        }
+        Instant timeStamp = Instant.now();
+        subscriptionsBySubscriberRepository.save(new SubscriptionsBySubscriber(new SubscriptionsBySubscriberKey(subscriberId, targetId), timeStamp));
+        subscribersByTargetRepository.save(new SubscribersByTarget(new SubscribersByTargetKey(targetId, subscriberId), timeStamp));
     }
 
     public void unsubscribe(SubscriptionRequest request) {
@@ -88,12 +99,18 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
         subscriberProfile.setSubscriptionsCount(subscriberProfile.getSubscriptionsCount() - 1);
         targetProfile.setSubscribersCount(targetProfile.getSubscribersCount() - 1);
 
+        Boolean wasVip = targetProfile.getIsVip();
+        Boolean becomeVip = updateVipStatus(targetProfile);
+
+        if (!wasVip) {
+            subscriptionEventProducer.sendUnsubscribed(request);
+        } else if (!becomeVip) {
+            subscriptionEventProducer.sendStopVip(targetId);
+            feedService.removeAllVipPostsByAuthor(targetId);
+        }
+
         profileRepository.save(subscriberProfile);
         profileRepository.save(targetProfile);
-
-        if (!updateVipStatus(targetId)) {
-            subscriptionEventProducer.sendUnsubscribed(request);
-        }
     }
 
     public Boolean hasUserSubscribed(SubscriptionRequest request) {
@@ -102,15 +119,9 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
         return subscriptionsBySubscriberRepository.findById(new SubscriptionsBySubscriberKey(subscriberId, targetId)).isPresent();
     }
 
-    public Boolean updateVipStatus(UUID authorId) {
-        Optional<Profile> optionalProfile = profileRepository.findById(authorId);
-        if (optionalProfile.isEmpty()) {
-            return false;
-        }
-        Profile profile = optionalProfile.get();
+    public Boolean updateVipStatus(Profile profile) {
         boolean isVip = profile.getSubscribersCount() > vipBound;
         profile.setIsVip(isVip);
-        profileRepository.save(profile);
         return isVip;
     }
 }

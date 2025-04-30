@@ -22,7 +22,6 @@ public class Post {
 
     private ByteBuffer photo;
     private String text;
-    private Instant timeStamp;
     // geo
     // friends
     private int likesCount;
