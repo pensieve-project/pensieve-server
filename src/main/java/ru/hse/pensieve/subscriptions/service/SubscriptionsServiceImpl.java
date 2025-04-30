@@ -119,7 +119,7 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
         return subscriptionsBySubscriberRepository.findById(new SubscriptionsBySubscriberKey(subscriberId, targetId)).isPresent();
     }
 
-    public Boolean updateVipStatus(Profile profile) {
+    private Boolean updateVipStatus(Profile profile) {
         boolean isVip = profile.getSubscribersCount() > vipBound;
         profile.setIsVip(isVip);
         return isVip;

@@ -21,6 +21,4 @@ public interface SubscriptionsService {
     void unsubscribe(SubscriptionRequest request);
 
     Boolean hasUserSubscribed(SubscriptionRequest request);
-
-    Boolean updateVipStatus(Profile profile);
 }

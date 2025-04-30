@@ -2,7 +2,7 @@ package ru.hse.pensieve.database.cassandra.repositories;
 
 import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.data.cassandra.repository.Query;
-import ru.hse.pensieve.database.cassandra.config.FeedTaskExecutor;
+import ru.hse.pensieve.database.cassandra.config.CassandraFeedTaskExecutor;
 import ru.hse.pensieve.database.cassandra.config.BucketConfig;
 import ru.hse.pensieve.database.cassandra.models.UserFeed;
 import ru.hse.pensieve.database.cassandra.models.UserFeedKey;
@@ -30,7 +30,7 @@ public interface UserFeedRepository extends CassandraRepository<UserFeed, UserFe
 
         for (int bucket = 0; bucket < buckets; bucket++) {
             int finalBucket = bucket;
-            futures.add(CompletableFuture.supplyAsync(() -> findFeedPageInBucket(userId, finalBucket, lastSeenTime, perBucketLimit), FeedTaskExecutor.getExecutor()));
+            futures.add(CompletableFuture.supplyAsync(() -> findFeedPageInBucket(userId, finalBucket, lastSeenTime, perBucketLimit), CassandraFeedTaskExecutor.getExecutor()));
         }
 
         return futures.stream()
@@ -53,7 +53,7 @@ public interface UserFeedRepository extends CassandraRepository<UserFeed, UserFe
                         .filter(post -> post.getAuthorId().equals(authorId))
                         .collect(Collectors.toList());
                 deleteAll(postsToDelete);
-            }, FeedTaskExecutor.getExecutor()));
+            }, CassandraFeedTaskExecutor.getExecutor()));
         }
 
         futures.forEach(CompletableFuture::join);
