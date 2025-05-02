@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hse.pensieve.authentication.models.RegisterRequest;
 import ru.hse.pensieve.authentication.service.AuthenticationService;
+import ru.hse.pensieve.database.cassandra.models.Point;
 import ru.hse.pensieve.feed.service.FeedService;
 import ru.hse.pensieve.models.ThemeImport;
 import ru.hse.pensieve.posts.models.*;
@@ -132,7 +133,12 @@ public class TestDataInitializer {
                 String imagePath = themeImagePaths.get(themeId);
                 byte[] image = loadImage(imagePath);
                 MultipartFile imageFile = toMultipartFile(imagePath, image);
-                PostRequest request = new PostRequest("Post content " + i, imageFile, authorId, themeId);
+                Point point = new Point();
+                point.setLatitude(-90 + random.nextDouble() * 180);
+                point.setLongitude(-180 + random.nextDouble() * 360);
+                ObjectMapper objectMapper = new ObjectMapper();
+                String locationJson = objectMapper.writeValueAsString(point);
+                PostRequest request = new PostRequest("Post content " + i, imageFile, locationJson, authorId, themeId);
                 PostResponse post = postService.savePost(request);
                 posts.add(post);
             }

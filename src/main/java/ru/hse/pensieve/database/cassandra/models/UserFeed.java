@@ -23,7 +23,7 @@ public class UserFeed {
     private UUID authorId;
     private ByteBuffer photo;
     private String text;
-    // geo
+    private Point location;
     // friends
     private int likesCount;
     private int commentsCount;

@@ -39,6 +39,16 @@ register_uuid()
 cluster = Cluster(['127.0.0.1'], port=9042)
 session = cluster.connect('pensieve')
 
+session.execute("""
+    CREATE TYPE IF NOT EXISTS point_type (
+        latitude double,
+        longitude double
+    )
+""")
+
+keyspace = cluster.metadata.keyspaces['pensieve']
+point_type = keyspace.user_types['point_type']
+
 fake = Faker()
 
 admin_id = UUID("b8855fe9-feb8-41a6-a367-47f576e340af")
@@ -59,7 +69,14 @@ conn.commit()
 cursor.close()
 conn.close()
 
+def generate_random_coords():
+    return {
+        'latitude': random.uniform(59.5, 60.0),
+        'longitude': random.uniform(30.0, 30.5)
+    }
+
 # PROFILES
+authors = [uuid4() for _ in range(50)]
 for author_id in authors:
     description = fake.text(max_nb_chars=150)
     liked_themes_ids = []
@@ -92,14 +109,22 @@ for theme_id in themes:
         photo_blob = theme_map[theme_id]['photo']
         text = fake.paragraph(nb_sentences=3)
         timestamp = fake.date_time_between(start_date='-1y', end_date='now')
+        coords = generate_random_coords()
         likes = 0
         comments = 0
         posts.append((post_id, author_id, theme_id))
 
-        session.execute(
-            "INSERT INTO posts (themeId, authorId, postId, photo, text, timeStamp, likesCount, commentsCount) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-            (theme_id, author_id, post_id, photo_blob, text, timestamp, likes, comments)
-        )
+    query = """
+        INSERT INTO posts
+            (themeId, authorId, postId, photo, text, timeStamp, location, likesCount, commentsCount)
+        VALUES (%s, %s, %s, %s, %s, %s, {latitude: %s, longitude: %s}, %s, %s)
+    """
+
+    session.execute(
+        query,
+        (theme_id, author_id, post_id, photo_blob, text, timestamp,
+         coords['latitude'], coords['longitude'], likes, comments)
+    )
 
 # LIKES
 for _ in range(100):
@@ -145,50 +170,4 @@ for _ in range(100):
         session.execute(
             "UPDATE posts SET commentsCount = %s WHERE themeId = %s AND authorId = %s AND postId = %s",
             (new_comments, theme_id, author_id, post_id)
-        )
-
-# SUBSCRIPTIONS
-subscriptions = set()
-num_subscriptions = 200
-for _ in range(num_subscriptions):
-    subscriber_id = random.choice(authors)
-    target_id = random.choice(authors)
-
-    while subscriber_id == target_id or (subscriber_id, target_id) in subscriptions:
-        subscriber_id = random.choice(authors)
-        target_id = random.choice(authors)
-
-    subscriptions.add((subscriber_id, target_id))
-    timestamp = fake.date_time_between(start_date='-1y', end_date='now')
-
-    session.execute(
-        "INSERT INTO subscriptions_by_subscriber (subscriberId, targetId, timeStamp) VALUES (%s, %s, %s)",
-        (subscriber_id, target_id, timestamp)
-    )
-
-    session.execute(
-        "INSERT INTO subscribers_by_target (targetId, subscriberId, timeStamp) VALUES (%s, %s, %s)",
-        (target_id, subscriber_id, timestamp)
-    )
-
-    row = session.execute(
-        "SELECT subscriptionsCount FROM profiles WHERE authorId = %s",
-        (subscriber_id,)
-    ).one()
-    if row:
-        new_subs = row.subscriptionscount + 1
-        session.execute(
-            "UPDATE profiles SET subscriptionsCount = %s WHERE authorId = %s",
-            (new_subs, subscriber_id)
-        )
-
-    row = session.execute(
-        "SELECT subscribersCount FROM profiles WHERE authorId = %s",
-        (target_id,)
-    ).one()
-    if row:
-        new_subs = row.subscriberscount + 1
-        session.execute(
-            "UPDATE profiles SET subscribersCount = %s WHERE authorId = %s",
-            (new_subs, target_id)
         )

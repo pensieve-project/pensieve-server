@@ -36,13 +36,16 @@ public class PostServiceImpl implements PostService {
     private CommentRepository commentRepository;
 
     @Autowired
+    private VipPostRepository vipPostRepository;
+
+    @Autowired
     private PostEventProducer postEventProducer;
 
     @Autowired
     private RedisService redisService;
 
     public PostResponse savePost(PostRequest request) throws BadPostException {
-        PostKey postKey = new PostKey(request.getThemeId(), Instant.now(), request.getAuthorId(), UUID.randomUUID());
+        PostKey postKey = new PostKey(request.getThemeId(), request.getAuthorId(), UUID.randomUUID());
         byte[] photoBytes;
         if (request.getPhoto() == null || request.getPhoto().isEmpty()) {
             throw new BadPostException("Post photo is null!");
@@ -52,11 +55,12 @@ public class PostServiceImpl implements PostService {
         } catch (IOException ex) {
             throw new BadPostException("Post photo is null!");
         }
-        Post post = postRepository.save(new Post(postKey, ByteBuffer.wrap(photoBytes), request.getText(), 0, 0));
+        Post post = postRepository.save(new Post(postKey, ByteBuffer.wrap(photoBytes), request.getText(), Instant.now(), request.getLocationPoint(), 0, 0));
 
         boolean isVip = profileRepository.isVip(post.getKey().getAuthorId());
 
         if (isVip) {
+            vipPostRepository.save(PostMapper.vipFromPost(post));
             redisService.cacheVipPost(post);
         } else {
             postEventProducer.sendPostCreated(post);

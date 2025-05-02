@@ -21,7 +21,8 @@ public class PostByAuthor {
 
     private ByteBuffer photo;
     private String text;
-    // geo
+    private Instant timeStamp;
+    private Point location;
     // friends
     private int likesCount;
     private int commentsCount;

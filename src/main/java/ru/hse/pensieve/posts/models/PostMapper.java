@@ -1,7 +1,6 @@
 package ru.hse.pensieve.posts.models;
 
 import ru.hse.pensieve.database.cassandra.models.*;
-import ru.hse.pensieve.database.cassandra.repositories.PostByAuthorRepository;
 
 import java.util.UUID;
 
@@ -11,9 +10,10 @@ public class PostMapper {
                 post.getKey().getThemeId(),
                 post.getKey().getAuthorId(),
                 post.getKey().getPostId(),
+                post.getLocation() != null ? post.getLocation() : null,
                 post.getPhoto() != null ? post.getPhoto().array() : null,
                 post.getText(),
-                post.getKey().getTimeStamp(),
+                post.getTimeStamp(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         );
@@ -24,9 +24,10 @@ public class PostMapper {
                 post.getKey().getThemeId(),
                 post.getKey().getAuthorId(),
                 post.getKey().getPostId(),
+                post.getLocation() != null ? post.getLocation() : null,
                 post.getPhoto() != null ? post.getPhoto().array() : null,
                 post.getText(),
-                post.getKey().getTimeStamp(),
+                post.getTimeStamp(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         );
@@ -37,9 +38,26 @@ public class PostMapper {
                 post.getKey().getThemeId(),
                 post.getKey().getAuthorId(),
                 post.getKey().getPostId(),
+                post.getLocation() != null ? post.getLocation() : null,
                 post.getPhoto() != null ? post.getPhoto().array() : null,
                 post.getText(),
-                post.getKey().getTimeStamp(),
+                post.getTimeStamp(),
+                post.getLikesCount(),
+                post.getCommentsCount()
+        );
+    }
+
+    public static VipPost vipFromPost(Post post) {
+        return new VipPost(
+                new VipPostKey(
+                        post.getKey().getAuthorId(),
+                        post.getTimeStamp(),
+                        post.getKey().getPostId()
+                ),
+                post.getKey().getThemeId(),
+                post.getPhoto(),
+                post.getText(),
+                post.getLocation(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         );
@@ -49,14 +67,31 @@ public class PostMapper {
         return new Post(
                 new PostKey(
                         userFeed.getThemeId(),
-                        userFeed.getKey().getTimeStamp(),
                         userFeed.getAuthorId(),
                         userFeed.getKey().getPostId()
                 ),
                 userFeed.getPhoto(),
                 userFeed.getText(),
+                userFeed.getKey().getTimeStamp(),
+                userFeed.getLocation(),
                 userFeed.getLikesCount(),
                 userFeed.getCommentsCount()
+        );
+    }
+
+    public static Post postFromVip(VipPost vipPost) {
+        return new Post(
+                new PostKey(
+                        vipPost.getThemeId(),
+                        vipPost.getKey().getAuthorId(),
+                        vipPost.getKey().getPostId()
+                ),
+                vipPost.getPhoto(),
+                vipPost.getText(),
+                vipPost.getKey().getTimeStamp(),
+                vipPost.getLocation(),
+                vipPost.getLikesCount(),
+                vipPost.getCommentsCount()
         );
     }
 
@@ -65,13 +100,14 @@ public class PostMapper {
                 new UserFeedKey(
                         userId,
                         bucket,
-                        post.getKey().getTimeStamp(),
+                        post.getTimeStamp(),
                         post.getKey().getPostId()
                 ),
                 post.getKey().getThemeId(),
                 post.getKey().getAuthorId(),
                 post.getPhoto(),
                 post.getText(),
+                post.getLocation(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         );
@@ -82,13 +118,14 @@ public class PostMapper {
                 new UserFeedKey(
                         userId,
                         bucket,
-                        post.getKey().getTimeStamp(),
+                        post.getTimeStamp(),
                         post.getKey().getPostId()
                 ),
                 post.getKey().getThemeId(),
                 post.getKey().getAuthorId(),
                 post.getPhoto(),
                 post.getText(),
+                post.getLocation(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         );
@@ -98,27 +135,13 @@ public class PostMapper {
         return new Post(
                 new PostKey(
                         post.getKey().getThemeId(),
-                        post.getKey().getTimeStamp(),
                         post.getKey().getAuthorId(),
                         post.getKey().getPostId()
                 ),
                 post.getPhoto(),
                 post.getText(),
-                post.getLikesCount(),
-                post.getCommentsCount()
-        );
-    }
-
-    public static Post postFromPostByAuthor(PostByAuthor post) {
-        return new Post(
-                new PostKey(
-                        post.getKey().getThemeId(),
-                        post.getKey().getTimeStamp(),
-                        post.getKey().getAuthorId(),
-                        post.getKey().getPostId()
-                ),
-                post.getPhoto(),
-                post.getText(),
+                post.getTimeStamp(),
+                post.getLocation(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         );
