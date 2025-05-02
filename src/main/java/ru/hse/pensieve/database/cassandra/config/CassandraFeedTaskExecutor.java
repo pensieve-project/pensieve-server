@@ -8,7 +8,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
-public class FeedTaskExecutor {
+public class CassandraFeedTaskExecutor {
     private static final int CORE_POOL_SIZE = 10;
     private static final int MAX_POOL_SIZE = 20;
     private static final ThreadPoolExecutor EXECUTOR =

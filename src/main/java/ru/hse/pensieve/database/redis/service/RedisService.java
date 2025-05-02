@@ -8,6 +8,7 @@ import ru.hse.pensieve.database.cassandra.models.Post;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -17,20 +18,36 @@ public class RedisService {
     @Autowired
     private RedisTemplate<String, Post> redisTemplate;
 
-    private final String PREFIX = "vip-post::";
+    private static final String KEY_PATTERN = "vip-post:%s:%s";
 
     public void cacheVipPost(Post post) {
-        String key = PREFIX + post.getKey().getPostId().toString();
+        String key = String.format(KEY_PATTERN,
+                post.getKey().getAuthorId(),
+                post.getKey().getPostId()
+        );
         redisTemplate.opsForValue().set(key, post);
     }
 
-    public Post getVipPost(UUID postId) {
-        String key = PREFIX + postId.toString();
-        return redisTemplate.opsForValue().get(key);
+    public Post getVipPost(UUID authorId, UUID postId) {
+        return redisTemplate.opsForValue().get(
+                String.format(KEY_PATTERN, authorId, postId)
+        );
     }
 
-    public void deleteVipPost(UUID postId) {
-        redisTemplate.delete(PREFIX + postId.toString());
+    public void deleteVipPost(UUID authorId, UUID postId) {
+        redisTemplate.delete(
+                String.format(KEY_PATTERN, authorId, postId)
+        );
+    }
+
+    public void deleteAllPostsByAuthor(UUID authorId) {
+        Set<String> keys = redisTemplate.keys(
+                String.format("vip-post:%s:*", authorId)
+        );
+
+        if (!keys.isEmpty()) {
+            redisTemplate.delete(keys);
+        }
     }
 
     public List<Post> getLatestVipPosts(UUID authorId, Instant before, int limit) {
@@ -40,8 +57,8 @@ public class RedisService {
             return List.of();
         }
         return posts.stream()
-                .filter(p -> p.getTimeStamp().isBefore(before))
-                .sorted(Comparator.comparing(Post::getTimeStamp).reversed())
+                .filter(p -> p.getKey().getTimeStamp().isBefore(before))
+                .sorted(Comparator.<Post, Instant>comparing(post -> post.getKey().getTimeStamp()).reversed())
                 .limit(limit)
                 .collect(Collectors.toList());
     }

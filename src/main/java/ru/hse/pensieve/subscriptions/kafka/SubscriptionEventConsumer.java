@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import ru.hse.pensieve.feed.service.FeedDistributionService;
 import ru.hse.pensieve.subscriptions.models.SubscriptionRequest;
 
+import java.util.UUID;
+
 @Component
 public class SubscriptionEventConsumer {
 
@@ -20,5 +22,15 @@ public class SubscriptionEventConsumer {
     @KafkaListener(topics = "user-unsubscribed", groupId = "feed-service")
     public void handleUnsubscribe(SubscriptionRequest event) {
         feedDistributionService.removePostsByAuthorAsync(event);
+    }
+
+    @KafkaListener(topics = "user-became-vip", groupId = "feed-service")
+    public void handleBecameVip(UUID targetId) {
+        feedDistributionService.removePostsFromFeeds(targetId);
+    }
+
+    @KafkaListener(topics = "user-stop-vip", groupId = "feed-service")
+    public void handleStopVip(UUID targetId) {
+        feedDistributionService.addPostsToFeeds(targetId);
     }
 }

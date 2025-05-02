@@ -12,8 +12,7 @@ tables_to_truncate = [
     'comments',
     'subscriptions_by_subscriber',
     'subscribers_by_target',
-    'user_feed',
-    'vip_posts'
+    'user_feed'
 ]
 
 for table in tables_to_truncate:

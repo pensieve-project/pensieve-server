@@ -2,11 +2,9 @@ package ru.hse.pensieve.feed.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.hse.pensieve.database.cassandra.models.*;
 import ru.hse.pensieve.database.cassandra.repositories.*;
 import ru.hse.pensieve.database.redis.service.RedisService;
-import ru.hse.pensieve.feed.models.SubscriptionsFeedRequest;
 import ru.hse.pensieve.posts.models.*;
 
 import java.time.Instant;
@@ -24,7 +22,7 @@ public class FeedServiceImpl implements FeedService {
     private UserFeedRepository userFeedRepository;
 
     @Autowired
-    private VipPostRepository vipPostRepository;
+    private PostByAuthorRepository postByAuthorRepository;
 
     @Autowired
     private SubscriptionsBySubscriberRepository subscriptionsBySubscriberRepository;
@@ -53,7 +51,7 @@ public class FeedServiceImpl implements FeedService {
         List<Post> vipPosts = getVipPosts(vipAuthors, limit, lastSeen);
 
         List<PostResponse> result = Stream.concat(regularPosts.stream(), vipPosts.stream())
-                .sorted(Comparator.comparing(Post::getTimeStamp).reversed())
+                .sorted(Comparator.<Post, Instant>comparing(post -> post.getKey().getTimeStamp()).reversed())
                 .limit(limit)
                 .map(PostMapper::fromPost)
                 .collect(Collectors.toList());
@@ -78,13 +76,24 @@ public class FeedServiceImpl implements FeedService {
                     List<Post> cachedPosts = redisService.getLatestVipPosts(authorId, lastSeen, perAuthorLimit);
 
                     if (cachedPosts.isEmpty()) {
-                        return vipPostRepository.findLatestByAuthor(authorId, lastSeen, perAuthorLimit)
+                        return postByAuthorRepository.findRecentByAuthor(authorId, lastSeen, perAuthorLimit)
                                 .stream()
-                                .map(PostMapper::postFromVip);
+                                .map(PostMapper::postFromPostByAuthor);
                     }
 
                     return cachedPosts.stream();
                 })
                 .collect(Collectors.toList());
+    }
+
+    public void cacheVipPosts(UUID targetId) {
+        List<PostByAuthor> posts = postByAuthorRepository.findRecentByAuthor(targetId, 50);
+        posts.forEach(post ->
+                redisService.cacheVipPost(PostMapper.postFromPostByAuthor(post))
+        );
+    }
+
+    public void removeAllVipPostsByAuthor(UUID targetId) {
+        redisService.deleteAllPostsByAuthor(targetId);
     }
 }
