@@ -114,4 +114,20 @@ public class PostMapper {
                 post.getCommentsCount()
         );
     }
+
+    public static Post postFromPostByAuthor(PostByAuthor post) {
+        return new Post(
+                new PostKey(
+                        post.getKey().getThemeId(),
+                        post.getKey().getTimeStamp(),
+                        post.getKey().getAuthorId(),
+                        post.getKey().getPostId()
+                ),
+                post.getPhoto(),
+                post.getText(),
+                post.getLocation(),
+                post.getLikesCount(),
+                post.getCommentsCount()
+        );
+    }
 }
