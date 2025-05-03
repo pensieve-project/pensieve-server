@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS posts (
     location frozen<point_type>,
     likesCount INT,
     commentsCount INT,
-    PRIMARY KEY ((themeId), authorId, postId)
-);
+    PRIMARY KEY ((themeId), timeStamp, authorId, postId)
+) WITH CLUSTERING ORDER BY (timeStamp DESC);
 
 CREATE TABLE IF NOT EXISTS themes (
     themeId UUID,
@@ -77,25 +77,13 @@ CREATE TABLE IF NOT EXISTS user_feed (
     PRIMARY KEY ((userId, bucket), timeStamp, postId)
 ) WITH CLUSTERING ORDER BY (timeStamp DESC);
 
-CREATE TABLE IF NOT EXISTS vip_posts (
-    authorId UUID,
-    themeId UUID,
-    postId UUID,
-    photo BLOB,
-    text TEXT,
-    timeStamp TIMESTAMP,
-    location frozen<point_type>,
-    likesCount INT,
-    commentsCount INT,
-    PRIMARY KEY (authorId, timeStamp, postId)
-) WITH CLUSTERING ORDER BY (timeStamp DESC);
-
 CREATE MATERIALIZED VIEW IF NOT EXISTS posts_by_author AS
 SELECT * FROM posts
-WHERE authorId IS NOT NULL AND themeId IS NOT NULL AND postId IS NOT NULL
-PRIMARY KEY ((authorId), themeId, postId);
+WHERE authorId IS NOT NULL AND themeId IS NOT NULL AND postId IS NOT NULL AND timeStamp IS NOT NULL
+PRIMARY KEY ((authorId), timeStamp, themeId, postId)
+WITH CLUSTERING ORDER BY (timeStamp DESC, themeId ASC, postId ASC);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS posts_by_id AS
 SELECT * FROM posts
-WHERE authorId IS NOT NULL AND themeId IS NOT NULL AND postId IS NOT NULL
-PRIMARY KEY ((postId), authorId, themeId);
+WHERE authorId IS NOT NULL AND themeId IS NOT NULL AND postId IS NOT NULL AND timeStamp IS NOT NULL
+PRIMARY KEY ((postId), timeStamp, authorId, themeId);
