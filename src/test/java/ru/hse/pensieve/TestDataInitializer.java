@@ -134,8 +134,10 @@ public class TestDataInitializer {
                 byte[] image = loadImage(imagePath);
                 MultipartFile imageFile = toMultipartFile(imagePath, image);
                 Point point = new Point();
-                point.setLatitude(-90 + random.nextDouble() * 180);
-                point.setLongitude(-180 + random.nextDouble() * 360);
+                double lat = 59.80 + random.nextDouble() * (60.05 - 59.80);
+                double lon = 29.97 + random.nextDouble() * (30.52 - 29.97);
+                point.setLatitude(lat);
+                point.setLongitude(lon);
                 ObjectMapper objectMapper = new ObjectMapper();
                 String locationJson = objectMapper.writeValueAsString(point);
                 PostRequest request = new PostRequest("Post content " + i, imageFile, locationJson, authorId, themeId);
