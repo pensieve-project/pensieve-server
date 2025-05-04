@@ -47,6 +47,13 @@ public class ThemeServiceImpl implements ThemeService {
         return themeRepository.findAll().stream().map(ThemeMapper::fromTheme).toList();
     }
 
+    public List<ThemeResponse> getLikedThemes(UUID authorId) {
+        List<UUID> likedThemesIds = profileRepository.getLikedThemesIds(authorId);
+        return themeRepository.findAllById(likedThemesIds).stream()
+                .map(ThemeMapper::fromTheme)
+                .toList();
+    }
+
     public String getThemeTitle(UUID themeId) {
         Optional<Theme> theme = themeRepository.findById(themeId);
         if (theme.isEmpty()) {
