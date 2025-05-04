@@ -15,8 +15,6 @@ public interface ThemeService {
     
     List<ThemeResponse> getAllThemes();
 
-    List<ThemeResponse> getLikedThemes(UUID authorId);
-
     String getThemeTitle(UUID themeId);
 
     Boolean hasUserLikedTheme(LikeRequest request);
