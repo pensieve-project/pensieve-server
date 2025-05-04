@@ -59,8 +59,10 @@ public class PostServiceImpl implements PostService {
         coAuthors.add(request.getAuthorId());
         Post post = postRepository.save(new Post(postKey, ByteBuffer.wrap(photoBytes), request.getText(), request.getLocationPoint(), coAuthors, 0, 0));
 
-        for (UUID coAuthor : coAuthors) {
-            albumRepository.save(new Album(new AlbumKey(coAuthor, coAuthors), timeStamp));
+        if (coAuthors.size() > 1) {
+            for (UUID coAuthor : coAuthors) {
+                albumRepository.save(new Album(new AlbumKey(coAuthor, coAuthors), timeStamp));
+            }
         }
 
         boolean isVip = profileRepository.isVip(post.getKey().getAuthorId());
