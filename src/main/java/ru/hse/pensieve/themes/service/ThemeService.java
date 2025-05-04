@@ -10,7 +10,9 @@ import java.util.UUID;
 public interface ThemeService {
 
     ThemeResponse createTheme(ThemeRequest request);
-
+    
+    List<ThemeResponse> getLikedThemes(UUID authorId);
+    
     List<ThemeResponse> getAllThemes();
 
     String getThemeTitle(UUID themeId);
