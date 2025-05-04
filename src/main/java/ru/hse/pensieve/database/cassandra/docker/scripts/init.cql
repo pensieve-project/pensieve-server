@@ -2,6 +2,11 @@ CREATE KEYSPACE IF NOT EXISTS pensieve WITH REPLICATION = {'class' : 'SimpleStra
 
 USE pensieve;
 
+CREATE TYPE IF NOT EXISTS point_type (
+    latitude double,
+    longitude double
+);
+
 CREATE TABLE IF NOT EXISTS posts (
     themeId UUID,
     authorId UUID,
@@ -9,10 +14,11 @@ CREATE TABLE IF NOT EXISTS posts (
     photo BLOB,
     text TEXT,
     timeStamp TIMESTAMP,
+    location frozen<point_type>,
     likesCount INT,
     commentsCount INT,
-    PRIMARY KEY ((themeId), authorId, postId)
-);
+    PRIMARY KEY ((themeId), timeStamp, authorId, postId)
+) WITH CLUSTERING ORDER BY (timeStamp DESC);
 
 CREATE TABLE IF NOT EXISTS themes (
     themeId UUID,
@@ -28,6 +34,9 @@ CREATE TABLE IF NOT EXISTS profiles (
     description TEXT,
     likedThemesIds LIST<UUID>,
     likedPostsIds LIST<UUID>,
+    subscriptionsCount INT,
+    subscribersCount INT,
+    isVip BOOLEAN,
     PRIMARY KEY ((authorId))
 );
 
@@ -39,12 +48,42 @@ CREATE TABLE IF NOT EXISTS comments (
     PRIMARY KEY ((postId), commentId)
 );
 
+CREATE TABLE IF NOT EXISTS subscriptions_by_subscriber (
+    subscriberId UUID,
+    targetId UUID,
+    timeStamp TIMESTAMP,
+    PRIMARY KEY (subscriberId, targetId)
+);
+
+CREATE TABLE IF NOT EXISTS subscribers_by_target (
+    targetId UUID,
+    subscriberId UUID,
+    timeStamp TIMESTAMP,
+    PRIMARY KEY (targetId, subscriberId)
+);
+
+CREATE TABLE IF NOT EXISTS user_feed (
+    userId UUID,
+    bucket INT,
+    themeId UUID,
+    postId UUID,
+    authorId UUID,
+    photo BLOB,
+    text TEXT,
+    timeStamp TIMESTAMP,
+    location frozen<point_type>,
+    likesCount INT,
+    commentsCount INT,
+    PRIMARY KEY ((userId, bucket), timeStamp, postId)
+) WITH CLUSTERING ORDER BY (timeStamp DESC);
+
 CREATE MATERIALIZED VIEW IF NOT EXISTS posts_by_author AS
 SELECT * FROM posts
-WHERE authorId IS NOT NULL AND themeId IS NOT NULL AND postId IS NOT NULL
-PRIMARY KEY ((authorId), themeId, postId);
+WHERE authorId IS NOT NULL AND themeId IS NOT NULL AND postId IS NOT NULL AND timeStamp IS NOT NULL
+PRIMARY KEY ((authorId), timeStamp, themeId, postId)
+WITH CLUSTERING ORDER BY (timeStamp DESC, themeId ASC, postId ASC);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS posts_by_id AS
 SELECT * FROM posts
-WHERE authorId IS NOT NULL AND themeId IS NOT NULL AND postId IS NOT NULL
-PRIMARY KEY ((postId), authorId, themeId);
+WHERE authorId IS NOT NULL AND themeId IS NOT NULL AND postId IS NOT NULL AND timeStamp IS NOT NULL
+PRIMARY KEY ((postId), timeStamp, authorId, themeId);

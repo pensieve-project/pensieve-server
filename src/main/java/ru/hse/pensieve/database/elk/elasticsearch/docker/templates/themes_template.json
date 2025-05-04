@@ -1,0 +1,49 @@
+{
+  "index_patterns": ["themes_index*"],
+  "template": {
+    "settings": {
+      "index": {
+        "analysis": {
+          "analyzer": {
+            "custom_index_analyzer": {
+              "tokenizer": "autocomplete_tokenizer",
+              "filter": [
+                "lowercase"
+              ]
+            },
+            "search_analyzer_w_synonym_graph": {
+              "tokenizer": "standard",
+              "filter": [
+                "lowercase",
+                "custom_synonym_graph_filter"
+              ]
+            }
+          },
+          "filter": {
+            "custom_synonym_graph_filter": {
+              "type": "synonym_graph",
+              "synonyms_path": "synonyms_en.txt"
+            }
+          },
+          "tokenizer": {
+            "autocomplete_tokenizer": {
+              "type": "edge_ngram",
+              "min_gram": 2,
+              "max_gram": 10,
+              "token_chars": ["letter", "digit"]
+            }
+          }
+        }
+      }
+    },
+    "mappings": {
+      "properties": {
+        "title": {
+          "type": "text",
+          "analyzer": "custom_index_analyzer",
+          "search_analyzer": "search_analyzer_w_synonym_graph"
+        }
+      }
+    }
+  }
+}

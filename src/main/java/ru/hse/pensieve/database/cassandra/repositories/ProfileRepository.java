@@ -17,6 +17,14 @@ public interface ProfileRepository extends CassandraRepository<Profile, UUID> {
         }
         return Collections.emptyList();
     }
+  
+    default boolean isVip(UUID authorId) {
+        Profile profile = findByAuthorId(authorId);
+        if (profile != null) {
+            return profile.getIsVip();
+        }
+        return false;
+    }
 
     default boolean hasLikedPost(UUID authorId, UUID postId) {
         Profile profile = findByAuthorId(authorId);

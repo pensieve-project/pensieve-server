@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.hse.pensieve.authentication.models.Tokens;
 import ru.hse.pensieve.authentication.service.JwtService;
+import ru.hse.pensieve.authentication.service.JwtServiceImpl;
 import ru.hse.pensieve.database.postgres.models.User;
 
 import javax.crypto.SecretKey;
@@ -30,7 +31,7 @@ public class JwtServiceTest {
         String accessSecret = Base64.getEncoder().encodeToString(rawAccessSecret.getBytes());
         String refreshSecret = Base64.getEncoder().encodeToString(rawRefreshSecret.getBytes());
 
-        jwtService = new JwtService(accessSecret, refreshSecret);
+        jwtService = new JwtServiceImpl(accessSecret, refreshSecret);
 
         testUser = new User();
         testUser.setUsername("testuser");

@@ -22,7 +22,7 @@ public class ThemeController {
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest request) {
         ThemeResponse response = themeService.createTheme(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(201).body(response);
     }
 
     @GetMapping
@@ -35,15 +35,6 @@ public class ThemeController {
     public ResponseEntity<List<ThemeResponse>> getLikedThemes(@RequestParam UUID authorId) {
         List<ThemeResponse> themes = themeService.getLikedThemes(authorId);
         return ResponseEntity.ok(themes);
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<ThemeResponse>> searchThemes(@RequestParam("query") String query) {
-        try {
-            return ResponseEntity.ok(themeService.searchThemes(query));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
     }
   
     @GetMapping("/title")
@@ -59,10 +50,10 @@ public class ThemeController {
     @PostMapping("/like")
     public ResponseEntity<?> likeTheme(@RequestBody LikeRequest request) {
         themeService.likeTheme(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(201).build();
     }
 
-    @PostMapping("/unlike")
+    @DeleteMapping("/unlike")
     public ResponseEntity<?> unlikeTheme(@RequestBody LikeRequest request) {
         themeService.unlikeTheme(request);
         return ResponseEntity.ok().build();
