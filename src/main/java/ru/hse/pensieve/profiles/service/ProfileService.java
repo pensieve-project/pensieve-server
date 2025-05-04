@@ -10,7 +10,6 @@ import ru.hse.pensieve.profiles.models.ProfileRequest;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -44,10 +43,6 @@ public class ProfileService {
 
     public Profile getProfileByAuthorId(UUID authorId) {
         return profileRepository.findByAuthorId(authorId);
-    }
-
-    public List<UUID> getLikedThemesIdsByAuthorId(UUID authorId) {
-        return profileRepository.getLikedThemesIds(authorId);
     }
 
     public ByteBuffer getAvatarByAuthorId(UUID authorId) {
