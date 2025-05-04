@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.hse.pensieve.config.exceptions.ErrorResponse;
 import ru.hse.pensieve.posts.models.*;
 import ru.hse.pensieve.posts.service.PostService;
-import ru.hse.pensieve.search.models.EsNotFoundException;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 

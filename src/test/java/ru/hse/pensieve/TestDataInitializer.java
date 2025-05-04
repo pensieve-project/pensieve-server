@@ -39,6 +39,7 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SpringBootTest
@@ -130,9 +131,11 @@ public class TestDataInitializer {
         for (UUID themeId : themes) {
             for (int i = 0; i < 3; i++) {
                 UUID authorId = authors.get(random.nextInt(authors.size()));
+
                 String imagePath = themeImagePaths.get(themeId);
                 byte[] image = loadImage(imagePath);
                 MultipartFile imageFile = toMultipartFile(imagePath, image);
+
                 Point point = new Point();
                 double lat = 59.80 + random.nextDouble() * (60.05 - 59.80);
                 double lon = 29.97 + random.nextDouble() * (30.52 - 29.97);
@@ -140,7 +143,10 @@ public class TestDataInitializer {
                 point.setLongitude(lon);
                 ObjectMapper objectMapper = new ObjectMapper();
                 String locationJson = objectMapper.writeValueAsString(point);
-                PostRequest request = new PostRequest("Post content " + i, imageFile, locationJson, authorId, themeId);
+
+                Set<UUID> coAuthorIds = generateCoAuthors(authorId);
+
+                PostRequest request = new PostRequest("Post content " + i, imageFile, locationJson, authorId, themeId, coAuthorIds);
                 PostResponse post = postService.savePost(request);
                 posts.add(post);
             }
@@ -242,6 +248,20 @@ public class TestDataInitializer {
     private String getRandomImage() {
         List<String> keys = new ArrayList<>(imageCache.keySet());
         return keys.get(random.nextInt(keys.size()));
+    }
+
+    private Set<UUID> generateCoAuthors(UUID mainAuthor) {
+        Set<UUID> result = new HashSet<>();
+
+        List<UUID> availableAuthors = authors.stream().filter(id -> !id.equals(mainAuthor)).toList();
+
+        int count = random.nextInt(4);
+
+        while (result.size() < count) {
+            result.add(availableAuthors.get(random.nextInt(availableAuthors.size())));
+        }
+
+        return result;
     }
 
     @Test

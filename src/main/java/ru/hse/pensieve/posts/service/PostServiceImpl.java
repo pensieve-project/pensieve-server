@@ -12,10 +12,7 @@ import ru.hse.pensieve.posts.models.*;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -30,6 +27,9 @@ public class PostServiceImpl implements PostService {
     private PostByIdRepository postByIdRepository;
 
     @Autowired
+    private AlbumRepository albumRepository;
+
+    @Autowired
     private ProfileRepository profileRepository;
 
     @Autowired
@@ -42,7 +42,9 @@ public class PostServiceImpl implements PostService {
     private RedisService redisService;
 
     public PostResponse savePost(PostRequest request) throws BadPostException {
-        PostKey postKey = new PostKey(request.getThemeId(), Instant.now(), request.getAuthorId(), UUID.randomUUID());
+        Instant timeStamp = Instant.now();
+        PostKey postKey = new PostKey(request.getThemeId(), timeStamp, request.getAuthorId(), UUID.randomUUID());
+
         byte[] photoBytes;
         if (request.getPhoto() == null || request.getPhoto().isEmpty()) {
             throw new BadPostException("Post photo is null!");
@@ -52,7 +54,14 @@ public class PostServiceImpl implements PostService {
         } catch (IOException ex) {
             throw new BadPostException("Post photo is null!");
         }
-        Post post = postRepository.save(new Post(postKey, ByteBuffer.wrap(photoBytes), request.getText(), request.getLocationPoint(), 0, 0));
+
+        SortedSet<UUID> coAuthors = new TreeSet<>(request.getCoAuthors());
+        coAuthors.add(request.getAuthorId());
+        Post post = postRepository.save(new Post(postKey, ByteBuffer.wrap(photoBytes), request.getText(), request.getLocationPoint(), coAuthors, 0, 0));
+
+        for (UUID coAuthor : coAuthors) {
+            albumRepository.save(new Album(new AlbumKey(coAuthor, coAuthors), timeStamp));
+        }
 
         boolean isVip = profileRepository.isVip(post.getKey().getAuthorId());
 

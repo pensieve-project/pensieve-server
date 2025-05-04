@@ -11,6 +11,7 @@ public class PostMapper {
                 post.getKey().getAuthorId(),
                 post.getKey().getPostId(),
                 post.getLocation() != null ? post.getLocation() : null,
+                post.getCoAuthors(),
                 post.getPhoto() != null ? post.getPhoto().array() : null,
                 post.getText(),
                 post.getKey().getTimeStamp(),
@@ -25,6 +26,7 @@ public class PostMapper {
                 post.getKey().getAuthorId(),
                 post.getKey().getPostId(),
                 post.getLocation() != null ? post.getLocation() : null,
+                post.getCoAuthors(),
                 post.getPhoto() != null ? post.getPhoto().array() : null,
                 post.getText(),
                 post.getKey().getTimeStamp(),
@@ -39,6 +41,22 @@ public class PostMapper {
                 post.getKey().getAuthorId(),
                 post.getKey().getPostId(),
                 post.getLocation() != null ? post.getLocation() : null,
+                post.getCoAuthors(),
+                post.getPhoto() != null ? post.getPhoto().array() : null,
+                post.getText(),
+                post.getKey().getTimeStamp(),
+                post.getLikesCount(),
+                post.getCommentsCount()
+        );
+    }
+
+    public static PostResponse fromPostByCoAuthor(PostByCoAuthors post) {
+        return new PostResponse(
+                post.getKey().getThemeId(),
+                post.getKey().getAuthorId(),
+                post.getKey().getPostId(),
+                post.getLocation() != null ? post.getLocation() : null,
+                post.getKey().getCoAuthors(),
                 post.getPhoto() != null ? post.getPhoto().array() : null,
                 post.getText(),
                 post.getKey().getTimeStamp(),
@@ -58,6 +76,7 @@ public class PostMapper {
                 userFeed.getPhoto(),
                 userFeed.getText(),
                 userFeed.getLocation(),
+                userFeed.getCoAuthors(),
                 userFeed.getLikesCount(),
                 userFeed.getCommentsCount()
         );
@@ -76,6 +95,7 @@ public class PostMapper {
                 post.getPhoto(),
                 post.getText(),
                 post.getLocation(),
+                post.getCoAuthors(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         );
@@ -94,6 +114,7 @@ public class PostMapper {
                 post.getPhoto(),
                 post.getText(),
                 post.getLocation(),
+                post.getCoAuthors(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         );
@@ -110,6 +131,7 @@ public class PostMapper {
                 post.getPhoto(),
                 post.getText(),
                 post.getLocation(),
+                post.getCoAuthors(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         );
@@ -126,6 +148,7 @@ public class PostMapper {
                 post.getPhoto(),
                 post.getText(),
                 post.getLocation(),
+                post.getCoAuthors(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         );
