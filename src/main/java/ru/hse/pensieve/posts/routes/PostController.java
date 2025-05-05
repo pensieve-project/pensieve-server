@@ -69,8 +69,8 @@ public class PostController {
     }
 
     @DeleteMapping("/unlike")
-    public ResponseEntity<?> unlikePost(@RequestBody LikeRequest request) {
-        postService.unlikePost(request);
+    public ResponseEntity<?> unlikePost(@RequestParam UUID authorId, @RequestParam UUID postId) {
+        postService.unlikePost(new LikeRequest(authorId, postId));
         return ResponseEntity.ok().build();
     }
 
