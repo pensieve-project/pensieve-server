@@ -4,6 +4,8 @@ import lombok.*;
 import ru.hse.pensieve.database.cassandra.models.Point;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -15,6 +17,7 @@ public class PostResponse {
     private UUID authorId;
     private UUID postId;
     private Point location;
+    private Set<UUID> coAuthors;
     private byte[] photo;
     private String text;
     private Instant timeStamp;
