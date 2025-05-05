@@ -54,8 +54,8 @@ public class ThemeController {
     }
 
     @DeleteMapping("/unlike")
-    public ResponseEntity<?> unlikeTheme(@RequestBody LikeRequest request) {
-        themeService.unlikeTheme(request);
+    public ResponseEntity<?> unlikeTheme(@RequestParam UUID authorId, @RequestParam UUID themeId) {
+        themeService.unlikeTheme(new LikeRequest(authorId, themeId));
         return ResponseEntity.ok().build();
     }
 }
