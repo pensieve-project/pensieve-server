@@ -79,7 +79,7 @@ public class TestDataInitializer {
         loadAllImages();
 
         adminId = authenticationService
-                .register(new RegisterRequest("admin", "admin@admin.com", hashWithSha256("admin123")))
+                .register(new RegisterRequest("admin", "admin@admin.com", "admin123"))
                 .join()
                 .getId();
         authors.add(adminId);
@@ -87,7 +87,7 @@ public class TestDataInitializer {
         for (int i = 0; i < 30; i++) {
             String username = generateUniqueUsername(i);
             UUID userId = authenticationService
-                    .register(new RegisterRequest(username, "user" + i + "@test.com", hashWithSha256("password" + i)))
+                    .register(new RegisterRequest(username, "user" + i + "@test.com", "password" + i))
                     .join()
                     .getId();
             authors.add(userId);
