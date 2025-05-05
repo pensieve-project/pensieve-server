@@ -55,9 +55,9 @@ public class PostServiceImpl implements PostService {
             throw new BadPostException("Post photo is null!");
         }
 
-        SortedSet<UUID> coAuthors = new TreeSet<>(request.getCoAuthors());
+        SortedSet<UUID> coAuthors = new TreeSet<>(request.getCoAuthors() != null ? request.getCoAuthors() : Collections.emptySet());
         coAuthors.add(request.getAuthorId());
-        Post post = postRepository.save(new Post(postKey, ByteBuffer.wrap(photoBytes), request.getText(), request.getLocationPoint(), coAuthors, 0, 0));
+        Post post = postRepository.save(new Post(postKey, ByteBuffer.wrap(photoBytes), request.getText(), request.getLocation(), coAuthors, 0, 0));
 
         if (coAuthors.size() > 1) {
             for (UUID coAuthor : coAuthors) {

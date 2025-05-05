@@ -10,13 +10,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.hse.pensieve.authentication.service.JwtService;
+import ru.hse.pensieve.database.cassandra.models.Point;
 import ru.hse.pensieve.posts.models.*;
 import ru.hse.pensieve.posts.routes.PostController;
 import ru.hse.pensieve.posts.service.PostService;
 
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,9 +48,9 @@ public class PostControllerTest {
         UUID themeId = UUID.randomUUID();
         UUID authorId = UUID.randomUUID();
         String text = "Test post";
+        Point location = new Point();
 
         ClassPathResource imageResource = new ClassPathResource("images/cat.jpg");
-
         MockMultipartFile photoFile = new MockMultipartFile(
                 "photo",
                 "cat.jpg",
@@ -54,12 +58,19 @@ public class PostControllerTest {
                 imageResource.getInputStream()
         );
 
+        MockPart textPart = new MockPart("text", text.getBytes(StandardCharsets.UTF_8));
+        textPart.getHeaders().setContentType(MediaType.TEXT_PLAIN);
+
+        String locationJson = objectMapper.writeValueAsString(location);
+        MockPart locationPart = new MockPart("location", locationJson.getBytes(StandardCharsets.UTF_8));
+        locationPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+
         PostResponse mockResponse = new PostResponse();
         mockResponse.setPostId(UUID.randomUUID());
         mockResponse.setText(text);
         mockResponse.setThemeId(themeId);
         mockResponse.setAuthorId(authorId);
-        mockResponse.setTimeStamp(java.time.Instant.now());
+        mockResponse.setTimeStamp(Instant.now());
         mockResponse.setLikesCount(0);
         mockResponse.setCommentsCount(0);
 
@@ -67,9 +78,10 @@ public class PostControllerTest {
 
         mockMvc.perform(multipart("/posts")
                         .file(photoFile)
+                        .part(locationPart)
+                        .part(textPart)
                         .param("themeId", themeId.toString())
-                        .param("authorId", authorId.toString())
-                        .param("text", text))
+                        .param("authorId", authorId.toString()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.text", is(text)))
                 .andExpect(jsonPath("$.authorId", is(authorId.toString())))

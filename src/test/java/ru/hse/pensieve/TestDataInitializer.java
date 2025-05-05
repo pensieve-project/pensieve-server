@@ -146,7 +146,7 @@ public class TestDataInitializer {
 
                 Set<UUID> coAuthorIds = generateCoAuthors(authorId);
 
-                PostRequest request = new PostRequest("Post content " + i, imageFile, locationJson, authorId, themeId, coAuthorIds);
+                PostRequest request = new PostRequest("Post content " + i, imageFile, point, authorId, themeId, coAuthorIds);
                 PostResponse post = postService.savePost(request);
                 posts.add(post);
             }

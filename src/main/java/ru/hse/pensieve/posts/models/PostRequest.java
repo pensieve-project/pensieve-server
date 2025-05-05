@@ -14,12 +14,8 @@ import java.util.UUID;
 public class PostRequest {
     private String text;
     private MultipartFile photo;
-    private String location;
+    private Point location;
     private UUID authorId;
     private UUID themeId;
     private Set<UUID> coAuthors;
-
-    public Point getLocationPoint() {
-        return Point.fromJson(location);
-    }
 }
