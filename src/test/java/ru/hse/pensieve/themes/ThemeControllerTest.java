@@ -68,6 +68,20 @@ public class ThemeControllerTest {
     }
 
     @Test
+    public void getLikedThemes() throws Exception {
+        UUID authorId = UUID.randomUUID();
+        UUID themeId = UUID.randomUUID();
+        ThemeResponse theme = new ThemeResponse(themeId, authorId, "Liked Theme", Instant.now());
+
+        when(themeService.getLikedThemes(authorId)).thenReturn(List.of(theme));
+
+        mockMvc.perform(get("/themes/get-liked")
+                        .param("authorId", authorId.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].themeId").value(themeId.toString()));
+    }
+
+    @Test
     public void testGetThemeTitle() throws Exception {
         UUID themeId = UUID.randomUUID();
 
@@ -78,5 +92,55 @@ public class ThemeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
                 .andExpect(content().string("Some title"));
+    }
+
+    @Test
+    public void hasUserLikedTheme_whenLiked() throws Exception {
+        UUID authorId = UUID.randomUUID();
+        UUID themeId = UUID.randomUUID();
+
+        when(themeService.hasUserLikedTheme(Mockito.any())).thenReturn(true);
+
+        mockMvc.perform(get("/themes/liked")
+                        .param("authorId", authorId.toString())
+                        .param("themeId", themeId.toString()))
+                .andExpect(status().isOk())
+                .andExpect(content().string("true"));
+    }
+
+    @Test
+    public void hasUserLikedTheme_whenNotLiked() throws Exception {
+        UUID authorId = UUID.randomUUID();
+        UUID themeId = UUID.randomUUID();
+
+        when(themeService.hasUserLikedTheme(Mockito.any())).thenReturn(false);
+
+        mockMvc.perform(get("/themes/liked")
+                        .param("authorId", authorId.toString())
+                        .param("themeId", themeId.toString()))
+                .andExpect(status().isOk())
+                .andExpect(content().string("false"));
+    }
+
+    @Test
+    public void likeTheme() throws Exception {
+        UUID authorId = UUID.randomUUID();
+        UUID themeId = UUID.randomUUID();
+
+        mockMvc.perform(post("/themes/like")
+                        .contentType("application/json")
+                        .content("{\"authorId\":\"" + authorId + "\",\"themeId\":\"" + themeId + "\"}"))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void unlikeTheme() throws Exception {
+        UUID authorId = UUID.randomUUID();
+        UUID themeId = UUID.randomUUID();
+
+        mockMvc.perform(delete("/themes/unlike")
+                        .param("authorId", authorId.toString())
+                        .param("themeId", themeId.toString()))
+                .andExpect(status().isOk());
     }
 }
