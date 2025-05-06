@@ -157,8 +157,8 @@ public class PostControllerTest {
         LikeRequest request = new LikeRequest(UUID.randomUUID(), UUID.randomUUID());
 
         mockMvc.perform(delete("/posts/unlike")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .param("authorId", request.getAuthorId().toString())
+                        .param("postId", request.getPostId().toString()))
                 .andExpect(status().isOk());
     }
 
