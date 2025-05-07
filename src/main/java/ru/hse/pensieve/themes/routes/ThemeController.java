@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import ru.hse.pensieve.posts.models.PostResponse;
 import ru.hse.pensieve.themes.models.LikeRequest;
 import ru.hse.pensieve.themes.models.ThemeRequest;
 import ru.hse.pensieve.themes.models.ThemeResponse;
@@ -57,5 +58,11 @@ public class ThemeController {
     public ResponseEntity<?> unlikeTheme(@RequestParam UUID authorId, @RequestParam UUID themeId) {
         themeService.unlikeTheme(new LikeRequest(authorId, themeId));
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/by-id")
+    public ResponseEntity<ThemeResponse> getThemeById(@RequestParam UUID themeId) {
+        ThemeResponse theme = themeService.getThemeById(themeId);
+        return ResponseEntity.ok(theme);
     }
 }

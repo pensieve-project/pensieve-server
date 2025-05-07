@@ -10,6 +10,8 @@ import ru.hse.pensieve.database.cassandra.models.Profile;
 import ru.hse.pensieve.database.cassandra.models.Theme;
 import ru.hse.pensieve.database.cassandra.repositories.ProfileRepository;
 import ru.hse.pensieve.database.cassandra.repositories.ThemeRepository;
+import ru.hse.pensieve.posts.models.PostMapper;
+import ru.hse.pensieve.posts.models.PostResponse;
 import ru.hse.pensieve.themes.models.LikeRequest;
 import ru.hse.pensieve.database.elk.elasticsearch.models.EsThemeDocument;
 import ru.hse.pensieve.themes.models.ThemeMapper;
@@ -92,5 +94,9 @@ public class ThemeServiceImpl implements ThemeService {
         likes.remove(request.getThemeId());
         profile.setLikedThemesIds(likes);
         profileRepository.save(profile);
+    }
+
+    public ThemeResponse getThemeById(UUID themeId) {
+        return themeRepository.findByThemeId(themeId).stream().map(ThemeMapper::fromThemeById).findFirst().orElse(null);
     }
 }
