@@ -17,10 +17,10 @@ import lombok.Getter;
 @Getter
 @Setter
 @PrimaryKeyClass
-public class PostByCoAuthorsKey implements Serializable {
+public class PostByAlbumKey implements Serializable {
 
     @PrimaryKeyColumn(type = PrimaryKeyType.PARTITIONED)
-    private final Set<UUID> coAuthors;
+    private final UUID albumId;
 
     @PrimaryKeyColumn(type = PrimaryKeyType.CLUSTERED, ordering = Ordering.DESCENDING)
     private final Instant timeStamp;

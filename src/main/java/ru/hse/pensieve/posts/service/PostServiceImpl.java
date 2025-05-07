@@ -42,8 +42,6 @@ public class PostServiceImpl implements PostService {
     private RedisService redisService;
 
     public PostResponse savePost(PostRequest request) throws BadPostException {
-        Instant timeStamp = Instant.now();
-        PostKey postKey = new PostKey(request.getThemeId(), timeStamp, request.getAuthorId(), UUID.randomUUID());
 
         byte[] photoBytes;
         if (request.getPhoto() == null || request.getPhoto().isEmpty()) {
@@ -54,16 +52,26 @@ public class PostServiceImpl implements PostService {
         } catch (IOException ex) {
             throw new BadPostException("Post photo is null!");
         }
+        ByteBuffer photo = ByteBuffer.wrap(photoBytes);
 
         SortedSet<UUID> coAuthors = new TreeSet<>(request.getCoAuthors() != null ? request.getCoAuthors() : Collections.emptySet());
-        coAuthors.add(request.getAuthorId());
-        Post post = postRepository.save(new Post(postKey, ByteBuffer.wrap(photoBytes), request.getText(), request.getLocation(), coAuthors, 0, 0));
+        UUID albumId = null;
+        if (!coAuthors.isEmpty()) {
+            coAuthors.add(request.getAuthorId());
 
-        if (coAuthors.size() > 1) {
-            for (UUID coAuthor : coAuthors) {
-                albumRepository.save(new Album(new AlbumKey(coAuthor, coAuthors), timeStamp));
+            Optional<Album> album = albumRepository.findById(new AlbumKey(request.getAuthorId(), coAuthors));
+            if (album.isPresent()) {
+                albumId = album.get().getAlbumId();
+            } else {
+                albumId = UUID.randomUUID();
+                for (UUID coAuthor : coAuthors) {
+                    albumRepository.save(new Album(new AlbumKey(coAuthor, coAuthors), albumId, photo));
+                }
             }
         }
+
+        PostKey postKey = new PostKey(request.getThemeId(), Instant.now(), request.getAuthorId(), UUID.randomUUID());
+        Post post = postRepository.save(new Post(postKey, photo, request.getText(), request.getLocation(), coAuthors, albumId, 0, 0));
 
         boolean isVip = profileRepository.isVip(post.getKey().getAuthorId());
 
