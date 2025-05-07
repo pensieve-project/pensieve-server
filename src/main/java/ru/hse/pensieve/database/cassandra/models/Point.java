@@ -10,6 +10,7 @@ import java.io.IOException;
 public class Point {
     private double latitude;
     private double longitude;
+    private String placeName;
 
     public static Point fromJson(String json) {
         try {

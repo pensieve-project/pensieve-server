@@ -4,7 +4,8 @@ USE pensieve;
 
 CREATE TYPE IF NOT EXISTS point_type (
     latitude double,
-    longitude double
+    longitude double,
+    placeName text
 );
 
 CREATE TABLE IF NOT EXISTS posts (
