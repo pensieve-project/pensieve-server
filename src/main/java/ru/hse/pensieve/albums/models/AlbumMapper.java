@@ -7,7 +7,8 @@ public class AlbumMapper {
         return new AlbumResponse(
                 post.getKey().getUserId(),
                 post.getKey().getCoAuthors(),
-                post.getTimeStamp()
+                post.getAlbumId(),
+                post.getAvatar()
         );
     }
 }

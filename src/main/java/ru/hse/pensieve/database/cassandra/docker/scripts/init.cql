@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS posts (
     timeStamp TIMESTAMP,
     location frozen<point_type>,
     coAuthors FROZEN<SET<UUID>>,
+    albumId UUID,
     likesCount INT,
     commentsCount INT,
     PRIMARY KEY ((themeId), timeStamp, authorId, postId)
@@ -75,6 +76,7 @@ CREATE TABLE IF NOT EXISTS user_feed (
     timeStamp TIMESTAMP,
     location frozen<point_type>,
     coAuthors FROZEN<SET<UUID>>,
+    albumId UUID,
     likesCount INT,
     commentsCount INT,
     PRIMARY KEY ((userId, bucket), timeStamp, postId)
@@ -83,7 +85,8 @@ CREATE TABLE IF NOT EXISTS user_feed (
 CREATE TABLE IF NOT EXISTS albums (
     userId UUID,
     coAuthors FROZEN<SET<UUID>>,
-    timeStamp TIMESTAMP,
+    albumId UUID,
+    avatar BLOB,
     PRIMARY KEY ((userId), coAuthors)
 );
 
@@ -93,10 +96,10 @@ WHERE authorId IS NOT NULL AND themeId IS NOT NULL AND postId IS NOT NULL AND ti
 PRIMARY KEY ((authorId), timeStamp, themeId, postId)
 WITH CLUSTERING ORDER BY (timeStamp DESC, themeId ASC, postId ASC);
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS posts_by_coauthors AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS posts_by_album AS
 SELECT * FROM posts
-WHERE authorId IS NOT NULL AND coAuthors IS NOT NULL AND themeId IS NOT NULL AND postId IS NOT NULL AND timeStamp IS NOT NULL
-PRIMARY KEY ((coAuthors), timeStamp, authorId, themeId, postId)
+WHERE authorId IS NOT NULL AND albumId IS NOT NULL AND themeId IS NOT NULL AND postId IS NOT NULL AND timeStamp IS NOT NULL
+PRIMARY KEY ((albumId), timeStamp, authorId, themeId, postId)
 WITH CLUSTERING ORDER BY (timeStamp DESC, authorId ASC, themeId ASC, postId ASC);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS posts_by_id AS
