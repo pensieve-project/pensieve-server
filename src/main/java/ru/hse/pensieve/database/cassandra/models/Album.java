@@ -7,7 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.Getter;
 
+import java.nio.ByteBuffer;
 import java.time.Instant;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,6 +21,7 @@ public class Album {
     @PrimaryKey
     private AlbumKey key;
 
-    private Instant timeStamp;
+    private UUID albumId;
+    private ByteBuffer avatar;
 
 }

@@ -139,8 +139,10 @@ public class TestDataInitializer {
                 Point point = new Point();
                 double lat = 59.80 + random.nextDouble() * (60.05 - 59.80);
                 double lon = 29.97 + random.nextDouble() * (30.52 - 29.97);
+                String name = "Unknown place";
                 point.setLatitude(lat);
                 point.setLongitude(lon);
+                point.setPlaceName(name);
                 ObjectMapper objectMapper = new ObjectMapper();
                 String locationJson = objectMapper.writeValueAsString(point);
 

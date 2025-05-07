@@ -47,35 +47,33 @@ public class AlbumsControllerTest {
         UUID coAuthor3 = UUID.randomUUID();
         Set<UUID> coAuthors = Set.of(coAuthor1, coAuthor2, coAuthor3);
 
+        UUID albumId = UUID.randomUUID();
+
         AlbumResponse mockResponse = new AlbumResponse();
         mockResponse.setUserId(userId);
         mockResponse.setCoAuthors(coAuthors);
-        mockResponse.setTimeStamp(Instant.now());
+        mockResponse.setAlbumId(albumId);
 
         when(albumService.getUserAlbums(Mockito.any())).thenReturn(List.of(mockResponse));
 
         mockMvc.perform(get("/albums")
                         .param("userId", userId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].userId", is(userId.toString())));
+                .andExpect(jsonPath("$[0].userId", is(userId.toString())))
+                .andExpect(jsonPath("$[0].albumId", is(albumId.toString())));
     }
 
     @Test
     public void getAlbumPosts() throws Exception {
-        UUID coAuthor1 = UUID.randomUUID();
-        UUID coAuthor2 = UUID.randomUUID();
-        UUID coAuthor3 = UUID.randomUUID();
-        Set<UUID> coAuthors = Set.of(coAuthor1, coAuthor2, coAuthor3);
+        UUID albumId = UUID.randomUUID();
 
         PostResponse post = new PostResponse();
         post.setText("Some post");
 
-        when(albumService.getAlbumPosts(coAuthors)).thenReturn(List.of(post));
+        when(albumService.getAlbumPosts(albumId)).thenReturn(List.of(post));
 
         mockMvc.perform(get("/albums/posts")
-                        .param("coAuthors", coAuthor1.toString())
-                        .param("coAuthors", coAuthor2.toString())
-                        .param("coAuthors", coAuthor3.toString()))
+                        .param("albumId", albumId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].text", is("Some post")));
     }

@@ -9,7 +9,6 @@ import ru.hse.pensieve.albums.models.*;
 import ru.hse.pensieve.posts.models.PostResponse;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -26,8 +25,8 @@ public class AlbumController {
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<List<PostResponse>> getAlbumPosts(@RequestParam Set<UUID> coAuthors) {
-        return ResponseEntity.ok(albumService.getAlbumPosts(coAuthors));
+    public ResponseEntity<List<PostResponse>> getAlbumPosts(@RequestParam UUID albumId) {
+        return ResponseEntity.ok(albumService.getAlbumPosts(albumId));
     }
 
 }

@@ -7,19 +7,22 @@ import lombok.Setter;
 import lombok.Getter;
 
 import java.nio.ByteBuffer;
+import java.util.Set;
+import java.util.UUID;
 
 @AllArgsConstructor
 @Getter
 @Setter
-@Table("posts_by_coauthors")
-public class PostByCoAuthors {
+@Table("posts_by_album")
+public class PostByAlbum {
 
     @PrimaryKey
-    private PostByCoAuthorsKey key;
+    private PostByAlbumKey key;
 
     private ByteBuffer photo;
     private String text;
     private Point location;
+    private Set<UUID> coAuthors;
     private int likesCount;
     private int commentsCount;
 }

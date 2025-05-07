@@ -50,13 +50,13 @@ public class PostMapper {
         );
     }
 
-    public static PostResponse fromPostByCoAuthor(PostByCoAuthors post) {
+    public static PostResponse fromPostByAlbum(PostByAlbum post) {
         return new PostResponse(
                 post.getKey().getThemeId(),
                 post.getKey().getAuthorId(),
                 post.getKey().getPostId(),
                 post.getLocation() != null ? post.getLocation() : null,
-                post.getKey().getCoAuthors(),
+                post.getCoAuthors(),
                 post.getPhoto() != null ? post.getPhoto().array() : null,
                 post.getText(),
                 post.getKey().getTimeStamp(),
@@ -77,6 +77,7 @@ public class PostMapper {
                 userFeed.getText(),
                 userFeed.getLocation(),
                 userFeed.getCoAuthors(),
+                userFeed.getAlbumId(),
                 userFeed.getLikesCount(),
                 userFeed.getCommentsCount()
         );
@@ -96,6 +97,7 @@ public class PostMapper {
                 post.getText(),
                 post.getLocation(),
                 post.getCoAuthors(),
+                post.getAlbumId(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         );
@@ -115,6 +117,7 @@ public class PostMapper {
                 post.getText(),
                 post.getLocation(),
                 post.getCoAuthors(),
+                post.getAlbumId(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         );
@@ -132,6 +135,7 @@ public class PostMapper {
                 post.getText(),
                 post.getLocation(),
                 post.getCoAuthors(),
+                post.getAlbumId(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         );
@@ -149,6 +153,7 @@ public class PostMapper {
                 post.getText(),
                 post.getLocation(),
                 post.getCoAuthors(),
+                post.getAlbumId(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         );

@@ -27,6 +27,7 @@ public class UserFeed {
     private String text;
     private Point location;
     private Set<UUID> coAuthors;
+    private UUID albumId;
     private int likesCount;
     private int commentsCount;
 }
