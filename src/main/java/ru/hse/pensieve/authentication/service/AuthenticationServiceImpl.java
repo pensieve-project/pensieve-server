@@ -7,6 +7,7 @@ import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
 
+import ru.hse.pensieve.authentication.encrypting.Hasher;
 import ru.hse.pensieve.authentication.models.*;
 import ru.hse.pensieve.database.postgres.models.User;
 import ru.hse.pensieve.database.postgres.repositories.UserRepository;
@@ -20,12 +21,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private Hasher hasher;
+
     public CompletableFuture<AuthenticationResponse> login(AuthenticationRequest request) {
         return CompletableFuture.supplyAsync(() -> {
             String salt = userRepository.findSaltByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("Email not found"));
             User user = userRepository.findUserByEmailAndPasswordHash(
-                            request.getEmail(), request.getPassword() + salt)
+                            request.getEmail(), hasher.hashWithSha256(request.getPassword() + salt))
                     .orElseThrow(() -> new RuntimeException("Wrong password"));
             final String accessToken = jwtService.generateAccessToken(user);
             final String refreshToken = jwtService.generateRefreshToken(user);
@@ -53,7 +57,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             byte[] generatedSalt = new byte[16];
             random.nextBytes(generatedSalt);
             String salt =  Base64.getEncoder().encodeToString(generatedSalt);
-            String passwordHash = request.getPassword() + salt;
+            String passwordHash = hasher.hashWithSha256(request.getPassword() + salt);
             User user = new User(request.getUsername(), request.getEmail(), passwordHash, salt);
             final String accessToken = jwtService.generateAccessToken(user);
             final String refreshToken = jwtService.generateRefreshToken(user);

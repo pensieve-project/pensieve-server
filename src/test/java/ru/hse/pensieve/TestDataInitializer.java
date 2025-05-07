@@ -39,6 +39,7 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SpringBootTest
@@ -78,7 +79,7 @@ public class TestDataInitializer {
         loadAllImages();
 
         adminId = authenticationService
-                .register(new RegisterRequest("admin", "admin@admin.com", hashWithSha256("admin123")))
+                .register(new RegisterRequest("admin", "admin@admin.com", "admin123"))
                 .join()
                 .getId();
         authors.add(adminId);
@@ -86,7 +87,7 @@ public class TestDataInitializer {
         for (int i = 0; i < 30; i++) {
             String username = generateUniqueUsername(i);
             UUID userId = authenticationService
-                    .register(new RegisterRequest(username, "user" + i + "@test.com", hashWithSha256("password" + i)))
+                    .register(new RegisterRequest(username, "user" + i + "@test.com", "password" + i))
                     .join()
                     .getId();
             authors.add(userId);
@@ -130,15 +131,22 @@ public class TestDataInitializer {
         for (UUID themeId : themes) {
             for (int i = 0; i < 3; i++) {
                 UUID authorId = authors.get(random.nextInt(authors.size()));
+
                 String imagePath = themeImagePaths.get(themeId);
                 byte[] image = loadImage(imagePath);
                 MultipartFile imageFile = toMultipartFile(imagePath, image);
+
                 Point point = new Point();
-                point.setLatitude(-90 + random.nextDouble() * 180);
-                point.setLongitude(-180 + random.nextDouble() * 360);
+                double lat = 59.80 + random.nextDouble() * (60.05 - 59.80);
+                double lon = 29.97 + random.nextDouble() * (30.52 - 29.97);
+                point.setLatitude(lat);
+                point.setLongitude(lon);
                 ObjectMapper objectMapper = new ObjectMapper();
                 String locationJson = objectMapper.writeValueAsString(point);
-                PostRequest request = new PostRequest("Post content " + i, imageFile, locationJson, authorId, themeId);
+
+                Set<UUID> coAuthorIds = generateCoAuthors(authorId);
+
+                PostRequest request = new PostRequest("Post content " + i, imageFile, point, authorId, themeId, coAuthorIds);
                 PostResponse post = postService.savePost(request);
                 posts.add(post);
             }
@@ -240,6 +248,20 @@ public class TestDataInitializer {
     private String getRandomImage() {
         List<String> keys = new ArrayList<>(imageCache.keySet());
         return keys.get(random.nextInt(keys.size()));
+    }
+
+    private Set<UUID> generateCoAuthors(UUID mainAuthor) {
+        Set<UUID> result = new HashSet<>();
+
+        List<UUID> availableAuthors = authors.stream().filter(id -> !id.equals(mainAuthor)).toList();
+
+        int count = random.nextInt(4);
+
+        while (result.size() < count) {
+            result.add(availableAuthors.get(random.nextInt(availableAuthors.size())));
+        }
+
+        return result;
     }
 
     @Test

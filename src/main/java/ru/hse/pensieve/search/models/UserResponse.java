@@ -9,5 +9,4 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UserResponse {
     private UUID userId;
-    private String username;
 }

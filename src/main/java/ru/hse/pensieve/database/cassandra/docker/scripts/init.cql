@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS posts (
     text TEXT,
     timeStamp TIMESTAMP,
     location frozen<point_type>,
+    coAuthors FROZEN<SET<UUID>>,
     likesCount INT,
     commentsCount INT,
     PRIMARY KEY ((themeId), timeStamp, authorId, postId)
@@ -72,16 +73,30 @@ CREATE TABLE IF NOT EXISTS user_feed (
     text TEXT,
     timeStamp TIMESTAMP,
     location frozen<point_type>,
+    coAuthors FROZEN<SET<UUID>>,
     likesCount INT,
     commentsCount INT,
     PRIMARY KEY ((userId, bucket), timeStamp, postId)
 ) WITH CLUSTERING ORDER BY (timeStamp DESC);
+
+CREATE TABLE IF NOT EXISTS albums (
+    userId UUID,
+    coAuthors FROZEN<SET<UUID>>,
+    timeStamp TIMESTAMP,
+    PRIMARY KEY ((userId), coAuthors)
+);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS posts_by_author AS
 SELECT * FROM posts
 WHERE authorId IS NOT NULL AND themeId IS NOT NULL AND postId IS NOT NULL AND timeStamp IS NOT NULL
 PRIMARY KEY ((authorId), timeStamp, themeId, postId)
 WITH CLUSTERING ORDER BY (timeStamp DESC, themeId ASC, postId ASC);
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS posts_by_coauthors AS
+SELECT * FROM posts
+WHERE authorId IS NOT NULL AND coAuthors IS NOT NULL AND themeId IS NOT NULL AND postId IS NOT NULL AND timeStamp IS NOT NULL
+PRIMARY KEY ((coAuthors), timeStamp, authorId, themeId, postId)
+WITH CLUSTERING ORDER BY (timeStamp DESC, authorId ASC, themeId ASC, postId ASC);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS posts_by_id AS
 SELECT * FROM posts

@@ -3,15 +3,18 @@ package ru.hse.pensieve.posts.routes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ru.hse.pensieve.config.exceptions.ErrorResponse;
+import ru.hse.pensieve.database.cassandra.models.Point;
 import ru.hse.pensieve.posts.models.*;
 import ru.hse.pensieve.posts.service.PostService;
-import ru.hse.pensieve.search.models.EsNotFoundException;
 
-import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -22,9 +25,16 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    @PostMapping
-    public ResponseEntity<PostResponse> createPost(@ModelAttribute PostRequest request) {
-        PostResponse response = postService.savePost(request);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PostResponse> createPost(
+            @RequestPart(value = "text", required = false) String text,
+            @RequestPart("photo") MultipartFile photo,
+            @RequestPart("location") Point location,
+            @RequestParam("authorId") UUID authorId,
+            @RequestParam("themeId") UUID themeId,
+            @RequestParam(value = "coAuthors", required = false) Set<UUID> coAuthors
+    ) {
+        PostResponse response = postService.savePost(new PostRequest(text, photo, location, authorId, themeId, coAuthors));
         return ResponseEntity.status(201).body(response);
     }
 
@@ -59,8 +69,8 @@ public class PostController {
     }
 
     @DeleteMapping("/unlike")
-    public ResponseEntity<?> unlikePost(@RequestBody LikeRequest request) {
-        postService.unlikePost(request);
+    public ResponseEntity<?> unlikePost(@RequestParam UUID authorId, @RequestParam UUID postId) {
+        postService.unlikePost(new LikeRequest(authorId, postId));
         return ResponseEntity.ok().build();
     }
 

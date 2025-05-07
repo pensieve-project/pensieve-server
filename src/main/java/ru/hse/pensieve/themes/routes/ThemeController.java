@@ -31,10 +31,21 @@ public class ThemeController {
         List<ThemeResponse> themes = themeService.getAllThemes();
         return ResponseEntity.ok(themes);
     }
+
+    @GetMapping("/get-liked")
+    public ResponseEntity<List<ThemeResponse>> getLikedThemes(@RequestParam UUID authorId) {
+        List<ThemeResponse> themes = themeService.getLikedThemes(authorId);
+        return ResponseEntity.ok(themes);
+    }
   
     @GetMapping("/title")
     public ResponseEntity<String> getThemeTitle(@RequestParam UUID themeId) {
         return ResponseEntity.ok(themeService.getThemeTitle(themeId));
+    }
+
+    @GetMapping("/liked")
+    public ResponseEntity<Boolean> hasUserLikedTheme(@RequestParam UUID authorId, @RequestParam UUID themeId) {
+        return ResponseEntity.ok(themeService.hasUserLikedTheme(new LikeRequest(authorId, themeId)));
     }
 
     @PostMapping("/like")
@@ -44,8 +55,8 @@ public class ThemeController {
     }
 
     @DeleteMapping("/unlike")
-    public ResponseEntity<?> unlikeTheme(@RequestBody LikeRequest request) {
-        themeService.unlikeTheme(request);
+    public ResponseEntity<?> unlikeTheme(@RequestParam UUID authorId, @RequestParam UUID themeId) {
+        themeService.unlikeTheme(new LikeRequest(authorId, themeId));
         return ResponseEntity.ok().build();
     }
 

@@ -15,7 +15,6 @@ import ru.hse.pensieve.profiles.service.ProfileService;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j

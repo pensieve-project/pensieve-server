@@ -8,6 +8,8 @@ import lombok.Getter;
 
 import java.nio.ByteBuffer;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -22,7 +24,7 @@ public class PostById {
     private ByteBuffer photo;
     private String text;
     private Point location;
-    // friends
+    private Set<UUID> coAuthors;
     private int likesCount;
     private int commentsCount;
 }
