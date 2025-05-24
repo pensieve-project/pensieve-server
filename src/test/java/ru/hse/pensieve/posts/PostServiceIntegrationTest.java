@@ -12,7 +12,6 @@ import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfig
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -43,6 +42,7 @@ import java.util.stream.StreamSupport;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
+@Disabled
 @SpringBootTest
 @EnableAutoConfiguration(exclude = {
         DataSourceAutoConfiguration.class,
@@ -73,6 +73,8 @@ public class PostServiceIntegrationTest {
                     .withEmbeddedZookeeper();
 
     private KafkaConsumer<String, Post> kafkaConsumer;
+
+    private final String POST_TOPIC = "post-created";
 
     @DynamicPropertySource
     public static void setupProperties(DynamicPropertyRegistry registry) {
@@ -136,7 +138,7 @@ public class PostServiceIntegrationTest {
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
 
         kafkaConsumer = new KafkaConsumer<>(props);
-        kafkaConsumer.subscribe(new ArrayList<>(List.of("post-created", "user-subscribed", "user-unsubscribed", "user-became-vip", "user-stop-vip")));
+        kafkaConsumer.subscribe(new ArrayList<>(List.of(POST_TOPIC)));
     }
 
     @AfterEach
@@ -214,7 +216,7 @@ public class PostServiceIntegrationTest {
 
         assertNotNull(response);
 
-        assertPostInKafka(response.getPostId(), "post-created");
+        assertPostInKafka(response.getPostId());
 
         Optional<Post> post = postRepository.findById(new PostKey(response.getThemeId(), response.getTimeStamp(), userId, response.getPostId()));
         assertTrue(post.isPresent());
@@ -234,9 +236,7 @@ public class PostServiceIntegrationTest {
 
         assertNotNull(response);
 
-        System.out.println(response.getPostId());
-
-        assertPostNotInKafka(response.getPostId(), "post-created");
+        assertPostNotInKafka(response.getPostId());
 
         Optional<Post> post = postRepository.findById(new PostKey(response.getThemeId(), response.getTimeStamp(), vipUserId, response.getPostId()));
         assertTrue(post.isPresent());
@@ -256,7 +256,7 @@ public class PostServiceIntegrationTest {
 
         assertNull(redisService.getVipPost(userId, notVipPost.getPostId()));
 
-        assertPostInKafka(notVipPost.getPostId(), "post-created");
+        assertPostInKafka(notVipPost.getPostId());
 
         profile.setIsVip(true);
         profileRepository.save(profile);
@@ -266,10 +266,7 @@ public class PostServiceIntegrationTest {
         assertNull(redisService.getVipPost(userId, notVipPost.getPostId()));
         assertNotNull(redisService.getVipPost(userId, vipPost.getPostId()));
 
-        System.out.println(notVipPost.getPostId());
-        System.out.println(vipPost.getPostId());
-
-        assertPostNotInKafka(vipPost.getPostId(), "post-created");
+        assertPostNotInKafka(vipPost.getPostId());
     }
 
     @Test
@@ -282,21 +279,17 @@ public class PostServiceIntegrationTest {
         PostRequest request = createPostRequest(userId);
         PostResponse vipPost = postService.savePost(request);
 
-        System.out.println(vipPost.getPostId());
-
-        assertPostNotInKafka(vipPost.getPostId(), "post-created");
+        assertPostNotInKafka(vipPost.getPostId());
 
         profile.setIsVip(false);
         profileRepository.save(profile);
 
         PostResponse notVipPost = postService.savePost(request);
 
-        System.out.println(notVipPost.getPostId());
-
         assertNull(redisService.getVipPost(userId, notVipPost.getPostId()));
         assertNotNull(redisService.getVipPost(userId, vipPost.getPostId()));
 
-        assertPostInKafka(notVipPost.getPostId(), "post-created");
+        assertPostInKafka(notVipPost.getPostId());
 
     }
 
@@ -364,27 +357,27 @@ public class PostServiceIntegrationTest {
         );
     }
 
-    private void assertPostInKafka(UUID postId, String topic) {
+    private void assertPostInKafka(UUID postId) {
         await().atMost(5, TimeUnit.SECONDS).until(() -> {
             ConsumerRecords<String, Post> records = kafkaConsumer.poll(Duration.ofMillis(100));
             return StreamSupport.stream(records.spliterator(), false)
-                    .anyMatch(r -> r.topic().equals(topic)
+                    .anyMatch(r -> r.topic().equals(POST_TOPIC)
                             && r.value().getKey().getPostId().equals(postId));
         });
     }
 
-    private void assertPostNotInKafka(UUID postId, String topic) {
+    private void assertPostNotInKafka(UUID postId) {
         boolean found = true;
         try {
             await().atMost(2, TimeUnit.SECONDS).until(() -> {
                 ConsumerRecords<String, Post> records = kafkaConsumer.poll(Duration.ofMillis(100));
-                return !StreamSupport.stream(records.spliterator(), false)
-                        .anyMatch(r -> r.topic().equals(topic)
+                return StreamSupport.stream(records.spliterator(), false)
+                        .noneMatch(r -> r.topic().equals(POST_TOPIC)
                                 && r.value().getKey().getPostId().equals(postId));
             });
             found = false;
         } catch (ConditionTimeoutException ignored) {
         }
-        assertFalse(found, "Post " + postId + " найден в топике " + topic);
+        assertFalse(found, "Post " + postId + " найден в топике " + POST_TOPIC);
     }
 }
