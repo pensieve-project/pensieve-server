@@ -6,6 +6,8 @@ services:
       - "${CASSANDRA_PORT}:${CASSANDRA_PORT}"
     environment:
       - CASSANDRA_CLUSTER_NAME=MyCluster
+      - MAX_HEAP_SIZE=128m
+      - HEAP_NEWSIZE=32m
     networks:
       - pensieve-network
     volumes:

@@ -24,13 +24,12 @@ public interface UserFeedRepository extends CassandraRepository<UserFeed, UserFe
 
     default List<UserFeed> findUserFeed(UUID userId, int limit, Instant lastSeenTime) {
         int buckets = BucketConfig.getBucketCount();
-        int perBucketLimit = (int) Math.ceil((double) limit / buckets) + 1;
 
         List<CompletableFuture<List<UserFeed>>> futures = new ArrayList<>(buckets);
 
         for (int bucket = 0; bucket < buckets; bucket++) {
             int finalBucket = bucket;
-            futures.add(CompletableFuture.supplyAsync(() -> findFeedPageInBucket(userId, finalBucket, lastSeenTime, perBucketLimit), CassandraFeedTaskExecutor.getExecutor()));
+            futures.add(CompletableFuture.supplyAsync(() -> findFeedPageInBucket(userId, finalBucket, lastSeenTime, limit), CassandraFeedTaskExecutor.getExecutor()));
         }
 
         return futures.stream()
