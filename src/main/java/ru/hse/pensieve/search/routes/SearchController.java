@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import ru.hse.pensieve.config.exceptions.ErrorResponse;
+import ru.hse.pensieve.posts.models.PostResponse;
 import ru.hse.pensieve.search.models.EsNotFoundException;
 import ru.hse.pensieve.search.models.UserResponse;
 import ru.hse.pensieve.search.service.SearchService;
@@ -30,6 +31,11 @@ public class SearchController {
     @GetMapping("/themes")
     public ResponseEntity<List<ThemeResponse>> searchThemes(@RequestParam String query) {
         return ResponseEntity.ok(searchService.searchThemes(query));
+    }
+
+    @GetMapping("/posts")
+    public ResponseEntity<List<PostResponse>> searchPosts(@RequestParam String query) {
+        return ResponseEntity.ok(searchService.searchPosts(query));
     }
 
     @ExceptionHandler(EsNotFoundException.class)

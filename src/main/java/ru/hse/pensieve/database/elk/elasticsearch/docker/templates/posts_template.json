@@ -1,0 +1,58 @@
+{
+  "index_patterns": ["posts_index*"],
+  "template": {
+    "settings": {
+      "index": {
+        "analysis": {
+          "analyzer": {
+            "post_index_analyzer": {
+              "tokenizer": "autocomplete_tokenizer",
+              "filter": [
+                "lowercase"
+              ]
+            },
+            "post_search_analyzer": {
+              "tokenizer": "standard",
+              "filter": [
+                "lowercase",
+                "post_synonym_filter"
+              ]
+            }
+          },
+          "filter": {
+            "post_synonym_filter": {
+              "type": "synonym_graph",
+              "synonyms_path": "synonyms_en.txt",
+              "expand": true
+            }
+          },
+          "tokenizer": {
+            "autocomplete_tokenizer": {
+              "type": "edge_ngram",
+              "min_gram": 2,
+              "max_gram": 10,
+              "token_chars": ["letter", "digit"]
+            }
+          }
+        }
+      }
+    },
+    "mappings": {
+      "dynamic": true,
+      "properties": {
+        "themeId":    { "type": "keyword" },
+        "authorId":   { "type": "keyword" },
+        "postId":     { "type": "keyword" },
+        "text":       { "type": "text", "analyzer": "standard" },
+        "placeName":  { "type": "text", "analyzer": "standard" },
+        "location":   { "type": "geo_point" },
+        "coAuthors":  { "type": "keyword" },
+        "albumId":    { "type": "keyword" },
+        "photo":      { "type": "binary" },
+        "timeStamp":  { "type": "date" },
+        "likesCount": { "type": "integer" },
+        "commentsCount": { "type": "integer" }
+      }
+    }
+  }
+}
