@@ -32,7 +32,7 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
     @Autowired
     private FeedService feedService;
 
-    private final Integer vipBound = 10000;
+    int vipBound = 1000;
 
     public List<UUID> getSubscriptions(UUID subscriberId) {
         return subscriptionsBySubscriberRepository.findByKeySubscriberId(subscriberId).stream().map(s -> s.getKey().getTargetId()).toList();
