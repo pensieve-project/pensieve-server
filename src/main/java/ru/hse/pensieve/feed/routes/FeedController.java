@@ -21,4 +21,11 @@ public class FeedController {
     public ResponseEntity<List<PostResponse>> getSubscriptionsFeed(@RequestParam UUID userId, @RequestParam Integer limit, @RequestParam Instant lastSeenTime) {
         return ResponseEntity.ok(feedService.getSubscriptionsFeed(userId, limit, lastSeenTime));
     }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<PostResponse>> getPopularFeed(
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        return ResponseEntity.ok(feedService.getPopularFeed(limit));
+    }
 }
