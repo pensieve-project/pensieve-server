@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hse.pensieve.database.cassandra.models.*;
 import ru.hse.pensieve.database.cassandra.repositories.*;
+import ru.hse.pensieve.database.redis.service.PostRankingService;
 import ru.hse.pensieve.database.redis.service.RedisService;
 import ru.hse.pensieve.posts.kafka.PostEventProducer;
 import ru.hse.pensieve.posts.models.*;
@@ -40,6 +41,9 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private PostRankingService postRankingService;
 
     public PostResponse savePost(PostRequest request) throws BadPostException {
 
@@ -121,6 +125,7 @@ public class PostServiceImpl implements PostService {
         likes.add(request.getPostId());
         profile.setLikedPostsIds(likes);
         profileRepository.save(profile);
+        postRankingService.addLike(request.getPostId(), request.getAuthorId());
     }
 
     public void unlikePost(LikeRequest request) {
@@ -144,6 +149,7 @@ public class PostServiceImpl implements PostService {
         likes.remove(request.getPostId());
         profile.setLikedPostsIds(likes);
         profileRepository.save(profile);
+        postRankingService.removeLike(request.getPostId(), request.getAuthorId());
     }
 
     public Boolean hasUserLikedPost(LikeRequest request) {

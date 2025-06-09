@@ -15,4 +15,5 @@ public interface FeedService {
 
     void removeAllVipPostsByAuthor(UUID targetId);
 
+    List<PostResponse> getPopularFeed(Integer limit);
 }
