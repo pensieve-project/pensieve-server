@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hse.pensieve.database.cassandra.models.*;
 import ru.hse.pensieve.database.cassandra.repositories.*;
+import ru.hse.pensieve.database.redis.service.PostRankingService;
 import ru.hse.pensieve.database.redis.service.RedisService;
 import ru.hse.pensieve.posts.models.*;
 
@@ -32,6 +33,9 @@ public class FeedServiceImpl implements FeedService {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private PostRankingService postRankingService;
 
     private List<UUID> findVipSubscriptions(UUID subscriberId) {
         List<SubscriptionsBySubscriber> subscriptions = subscriptionsBySubscriberRepository.findByKeySubscriberId(subscriberId);
@@ -95,5 +99,11 @@ public class FeedServiceImpl implements FeedService {
 
     public void removeAllVipPostsByAuthor(UUID targetId) {
         redisService.deleteAllPostsByAuthor(targetId);
+    }
+
+    public List<PostResponse> getPopularFeed(Integer limit) {
+        return postRankingService.getTopPosts(limit).stream()
+                .map(PostMapper::fromPost)
+                .toList();
     }
 }
