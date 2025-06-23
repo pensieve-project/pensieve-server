@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.pensieve.feed.service.FeedService;
 import ru.hse.pensieve.posts.models.*;
+import ru.hse.pensieve.themes.models.ThemeResponse;
 
 import java.time.Instant;
 import java.util.List;
@@ -27,5 +28,12 @@ public class FeedController {
             @RequestParam(defaultValue = "10") int limit
     ) {
         return ResponseEntity.ok(feedService.getPopularFeed(limit));
+    }
+
+    @GetMapping("/popular-themes")
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes(
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        return ResponseEntity.ok(feedService.getPopularThemes(limit));
     }
 }

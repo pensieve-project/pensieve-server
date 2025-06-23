@@ -6,10 +6,12 @@ import java.util.UUID;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Getter;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Table("themes")

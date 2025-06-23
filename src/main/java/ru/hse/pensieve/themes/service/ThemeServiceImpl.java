@@ -1,8 +1,6 @@
 package ru.hse.pensieve.themes.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.search.Hit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,20 +8,16 @@ import ru.hse.pensieve.database.cassandra.models.Profile;
 import ru.hse.pensieve.database.cassandra.models.Theme;
 import ru.hse.pensieve.database.cassandra.repositories.ProfileRepository;
 import ru.hse.pensieve.database.cassandra.repositories.ThemeRepository;
-import ru.hse.pensieve.posts.models.PostMapper;
-import ru.hse.pensieve.posts.models.PostResponse;
+import ru.hse.pensieve.database.redis.service.ThemeRankingService;
 import ru.hse.pensieve.themes.models.LikeRequest;
-import ru.hse.pensieve.database.elk.elasticsearch.models.EsThemeDocument;
 import ru.hse.pensieve.themes.models.ThemeMapper;
 import ru.hse.pensieve.themes.models.ThemeRequest;
 import ru.hse.pensieve.themes.models.ThemeResponse;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,6 +32,9 @@ public class ThemeServiceImpl implements ThemeService {
 
     @Autowired
     private ElasticsearchClient esClient;
+
+    @Autowired
+    private ThemeRankingService themeRankingService;
 
     public ThemeResponse createTheme(ThemeRequest request) {
         Theme theme = new Theme(UUID.randomUUID(), request.getAuthorId(), request.getTitle(), Instant.now());
@@ -80,6 +77,7 @@ public class ThemeServiceImpl implements ThemeService {
         likes.add(request.getThemeId());
         profile.setLikedThemesIds(likes);
         profileRepository.save(profile);
+        themeRankingService.recordThemeActivity(request.getThemeId());
     }
 
     public void unlikeTheme(LikeRequest request) {
@@ -94,6 +92,7 @@ public class ThemeServiceImpl implements ThemeService {
         likes.remove(request.getThemeId());
         profile.setLikedThemesIds(likes);
         profileRepository.save(profile);
+        themeRankingService.removeThemeActivity(request.getThemeId());
     }
 
     public ThemeResponse getThemeById(UUID themeId) {

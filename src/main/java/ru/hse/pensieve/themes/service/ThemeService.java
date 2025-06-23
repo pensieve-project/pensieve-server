@@ -1,6 +1,5 @@
 package ru.hse.pensieve.themes.service;
 
-import ru.hse.pensieve.posts.models.PostResponse;
 import ru.hse.pensieve.themes.models.LikeRequest;
 import ru.hse.pensieve.themes.models.ThemeRequest;
 import ru.hse.pensieve.themes.models.ThemeResponse;

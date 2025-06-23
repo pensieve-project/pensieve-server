@@ -1,7 +1,7 @@
 package ru.hse.pensieve.feed.service;
 
-import ru.hse.pensieve.database.cassandra.models.PostByAuthor;
 import ru.hse.pensieve.posts.models.*;
+import ru.hse.pensieve.themes.models.ThemeResponse;
 
 import java.time.Instant;
 import java.util.List;
@@ -16,4 +16,6 @@ public interface FeedService {
     void removeAllVipPostsByAuthor(UUID targetId);
 
     List<PostResponse> getPopularFeed(Integer limit);
+
+    List<ThemeResponse> getPopularThemes(Integer limit);
 }

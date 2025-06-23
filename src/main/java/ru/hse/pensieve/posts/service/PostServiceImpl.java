@@ -7,6 +7,7 @@ import ru.hse.pensieve.database.cassandra.models.*;
 import ru.hse.pensieve.database.cassandra.repositories.*;
 import ru.hse.pensieve.database.redis.service.PostRankingService;
 import ru.hse.pensieve.database.redis.service.RedisService;
+import ru.hse.pensieve.database.redis.service.ThemeRankingService;
 import ru.hse.pensieve.posts.kafka.PostEventProducer;
 import ru.hse.pensieve.posts.models.*;
 
@@ -44,6 +45,9 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private PostRankingService postRankingService;
+
+    @Autowired
+    private ThemeRankingService themeRankingService;
 
     public PostResponse savePost(PostRequest request) throws BadPostException {
 
@@ -85,6 +89,7 @@ public class PostServiceImpl implements PostService {
             postEventProducer.sendPostCreated(post);
         }
 
+        themeRankingService.recordThemeActivity(request.getThemeId());
         return PostMapper.fromPost(post);
     }
 
@@ -126,6 +131,8 @@ public class PostServiceImpl implements PostService {
         profile.setLikedPostsIds(likes);
         profileRepository.save(profile);
         postRankingService.addLike(request.getPostId(), request.getAuthorId());
+        UUID themeId = posts.getFirst().getKey().getThemeId();
+        themeRankingService.recordThemeActivity(themeId);
     }
 
     public void unlikePost(LikeRequest request) {
@@ -150,6 +157,8 @@ public class PostServiceImpl implements PostService {
         profile.setLikedPostsIds(likes);
         profileRepository.save(profile);
         postRankingService.removeLike(request.getPostId(), request.getAuthorId());
+        UUID themeId = posts.getFirst().getKey().getThemeId();
+        themeRankingService.removeThemeActivity(themeId);
     }
 
     public Boolean hasUserLikedPost(LikeRequest request) {
