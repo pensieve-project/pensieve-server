@@ -43,8 +43,8 @@ public class SubscriptionsController {
     }
 
     @DeleteMapping("/unsubscribe")
-    public ResponseEntity<?> unsubscribe(@RequestBody SubscriptionRequest request) {
-        subscriptionsService.unsubscribe(request);
+    public ResponseEntity<?> unsubscribe(@RequestParam UUID subscriberId, @RequestParam UUID targetId) {
+        subscriptionsService.unsubscribe(new SubscriptionRequest(subscriberId, targetId));
         return ResponseEntity.ok().build();
     }
 
