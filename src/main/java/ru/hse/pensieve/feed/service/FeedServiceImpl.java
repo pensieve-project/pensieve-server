@@ -6,7 +6,10 @@ import ru.hse.pensieve.database.cassandra.models.*;
 import ru.hse.pensieve.database.cassandra.repositories.*;
 import ru.hse.pensieve.database.redis.service.PostRankingService;
 import ru.hse.pensieve.database.redis.service.RedisService;
+import ru.hse.pensieve.database.redis.service.ThemeRankingService;
 import ru.hse.pensieve.posts.models.*;
+import ru.hse.pensieve.themes.models.ThemeMapper;
+import ru.hse.pensieve.themes.models.ThemeResponse;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -36,6 +39,9 @@ public class FeedServiceImpl implements FeedService {
 
     @Autowired
     private PostRankingService postRankingService;
+
+    @Autowired
+    private ThemeRankingService themeRankingService;
 
     private List<UUID> findVipSubscriptions(UUID subscriberId) {
         List<SubscriptionsBySubscriber> subscriptions = subscriptionsBySubscriberRepository.findByKeySubscriberId(subscriberId);
@@ -104,6 +110,12 @@ public class FeedServiceImpl implements FeedService {
     public List<PostResponse> getPopularFeed(Integer limit) {
         return postRankingService.getTopPosts(limit).stream()
                 .map(PostMapper::fromPost)
+                .toList();
+    }
+
+    public List<ThemeResponse> getPopularThemes(Integer limit) {
+        return themeRankingService.getTopThemes(limit).stream()
+                .map(ThemeMapper::fromTheme)
                 .toList();
     }
 }
