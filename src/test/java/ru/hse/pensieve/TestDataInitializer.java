@@ -39,7 +39,6 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SpringBootTest
@@ -161,7 +160,9 @@ public class TestDataInitializer {
         for (int i = 0; i < 100; i++) {
             UUID userId = authors.get(random.nextInt(authors.size()));
             UUID postId = posts.get(random.nextInt(posts.size())).getPostId();
+            UUID themeId = themes.get(random.nextInt(themes.size()));
             postService.likePost(new LikeRequest(userId, postId));
+            themeService.likeTheme(new ru.hse.pensieve.themes.models.LikeRequest(userId, themeId));
         }
 
         // комментарии
