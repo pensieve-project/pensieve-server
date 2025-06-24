@@ -193,4 +193,14 @@ public class PostServiceImpl implements PostService {
         PostById post = postByIdRepository.findByKeyPostId(postId).getFirst();
         return post.getCommentsCount();
     }
+
+    public byte[] getPhoto(UUID postId) {
+        PostById post = postByIdRepository.findByKeyPostId(postId).getFirst();
+        return post.getPhoto().array();
+    }
+
+    public Set<UUID> getCoAuthors(UUID postId) {
+        PostById post = postByIdRepository.findByKeyPostId(postId).getFirst();
+        return post.getCoAuthors();
+    }
 }

@@ -1,8 +1,6 @@
 package ru.hse.pensieve.search.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.SortOrder;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.CompletionSuggestOption;
@@ -14,17 +12,23 @@ import org.springframework.stereotype.Service;
 import ru.hse.pensieve.database.elk.elasticsearch.models.EsPostDocument;
 import ru.hse.pensieve.database.elk.elasticsearch.models.EsThemeDocument;
 import ru.hse.pensieve.database.elk.elasticsearch.models.EsUserDocument;
+import ru.hse.pensieve.posts.models.PostMapper;
 import ru.hse.pensieve.posts.models.PostResponse;
+import ru.hse.pensieve.posts.service.PostService;
 import ru.hse.pensieve.search.models.EsNotFoundException;
-import ru.hse.pensieve.search.models.PostMapper;
 import ru.hse.pensieve.search.models.UserMapper;
 import ru.hse.pensieve.search.models.UserResponse;
 import ru.hse.pensieve.themes.models.ThemeMapper;
 import ru.hse.pensieve.themes.models.ThemeResponse;
 
+import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,12 +37,15 @@ public class SearchServiceImpl implements SearchService {
     @Autowired
     private ElasticsearchClient client;
 
+    @Autowired
+    private PostService postService;
+
     public List<UserResponse> searchUsers(String prefix) throws EsNotFoundException {
 
         SearchRequest request = SearchRequest.of(s -> s
                 .index("users_index")
                 .suggest(su -> su
-                        .suggesters("username-suggest", fs -> fs
+                        .suggesters("authorusername-suggest", fs -> fs
                                 .text(prefix)
                                 .completion(CompletionSuggester.of(c -> c
                                         .field("suggest")
@@ -52,7 +59,7 @@ public class SearchServiceImpl implements SearchService {
             SearchResponse<EsUserDocument> response = client.search(request, EsUserDocument.class);
 
             return response.suggest()
-                    .get("username-suggest")
+                    .get("authorusername-suggest")
                     .getFirst()
                     .completion()
                     .options()
@@ -73,7 +80,7 @@ public class SearchServiceImpl implements SearchService {
                             .index("themes_index")
                             .query(q -> q
                                     .match(m -> m
-                                            .field("title")
+                                            .field("themetitle")
                                             .query(query)
                                             .fuzziness("AUTO")
                                     )
@@ -96,7 +103,7 @@ public class SearchServiceImpl implements SearchService {
         try {
             Query mm = Query.of(q -> q
                 .multiMatch(mmq -> mmq
-                    .fields("themeTitle^3", "text^2", "placeName^2", "authorUsername^1.5")
+                    .fields("themetitle^3", "text^2", "placename^2", "authorusername^1.5")
                     .query(query)
                     .fuzziness("AUTO")
                 )
@@ -112,7 +119,12 @@ public class SearchServiceImpl implements SearchService {
             return response.hits().hits().stream()
                     .map(Hit::source)
                     .filter(Objects::nonNull)
-                    .map(PostMapper::fromEsPost)
+                    .map(esPost -> {
+                        byte[] photo = postService.getPhoto(esPost.getPostId());
+                        Set<UUID> coAuthors = postService.getCoAuthors(esPost.getPostId());
+
+                        return PostMapper.fromEsPost(esPost, photo, coAuthors);
+                    })
                     .toList();
 
         } catch (IOException ex) {

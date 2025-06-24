@@ -1,7 +1,9 @@
 package ru.hse.pensieve.posts.models;
 
 import ru.hse.pensieve.database.cassandra.models.*;
+import ru.hse.pensieve.database.elk.elasticsearch.models.EsPostDocument;
 
+import java.util.Set;
 import java.util.UUID;
 
 public class PostMapper {
@@ -18,6 +20,27 @@ public class PostMapper {
                 post.getKey().getTimeStamp(),
                 post.getLikesCount(),
                 post.getCommentsCount()
+        );
+    }
+
+    public static PostResponse fromEsPost(EsPostDocument esPost, byte[] photo, Set<UUID> coAuthors) {
+        return new PostResponse(
+                esPost.getThemeId(),
+                esPost.getAuthorId(),
+                esPost.getPostId(),
+                esPost.getLocation() != null
+                        ? new Point(
+                        esPost.getLocation().getLat(),
+                        esPost.getLocation().getLon(),
+                        esPost.getPlaceName()
+                ) : null,
+                coAuthors,
+                esPost.getAlbumId() != null ? esPost.getAlbumId() : null,
+                photo,
+                esPost.getText(),
+                esPost.getTimeStamp(),
+                esPost.getLikesCount(),
+                esPost.getCommentsCount()
         );
     }
 

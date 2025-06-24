@@ -22,6 +22,7 @@ public class EsThemeDocument {
     @JsonProperty("authorid")
     private UUID authorId;
 
+    @JsonProperty("themetitle")
     private String title;
 
     @JsonProperty("timestamp")

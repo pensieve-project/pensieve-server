@@ -38,7 +38,7 @@
     },
     "mappings": {
       "properties": {
-        "title": {
+        "themetitle": {
           "type": "text",
           "analyzer": "custom_index_analyzer",
           "search_analyzer": "search_analyzer_w_synonym_graph"

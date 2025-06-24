@@ -17,8 +17,9 @@ import java.util.UUID;
 @Document(indexName = "users_index")
 public class EsUserDocument {
     @Id
-    @JsonProperty("id")
+    @JsonProperty("authorid")
     private UUID userId;
 
+    @JsonProperty("authorusername")
     private String username;
 }
