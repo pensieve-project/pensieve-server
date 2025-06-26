@@ -3,8 +3,10 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-src/main/resources/*
-src/test/resources/*
+src/main/resources/certs/*
+src/main/resources/application.properties
+src/main/resources/ca.crt
+src/test/resources/application-test.properties
 **/*.env
 
 ### Logstash Drivers
